@@ -1,12 +1,12 @@
 import i18nKeyNamingConvention from './rules/i18n-key-naming-convention.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 
-export const rules = {
+const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
   'no-hardcoded-strings': noHardcodedStrings,
 };
 
-export const configs = {
+const configs = {
   recommended: {
     plugins: ['fyle-core'],
     rules: {
@@ -22,3 +22,6 @@ export const configs = {
     },
   },
 };
+
+export { rules, configs };
+export default { rules, configs };
