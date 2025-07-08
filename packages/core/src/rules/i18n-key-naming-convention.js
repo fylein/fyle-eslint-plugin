@@ -2,7 +2,8 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import path from 'path';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/i18n-key-naming-convention/README.md`
+  () =>
+    `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/i18n-key-naming-convention/README.md`
 );
 
 const RULE_NAME = 'i18n-key-naming-convention';
@@ -11,11 +12,7 @@ function kebabToCamelCase(str) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }
 
-function stripPrefixes(
-  rawName,
-  suffix,
-  prefixes = ['feature-', 'ui-']
-) {
+function stripPrefixes(rawName, suffix, prefixes = ['feature-', 'ui-']) {
   let name = rawName;
   for (const prefix of prefixes) {
     if (name.startsWith(prefix)) {
@@ -29,7 +26,10 @@ function getContextInfo(filename) {
   const base = path.basename(filename);
 
   if (base.endsWith('.component.html') || base.endsWith('.component.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.(html|ts)$/, ''), '.component');
+    const cleaned = stripPrefixes(
+      base.replace(/\.(html|ts)$/, ''),
+      '.component'
+    );
     return { prefix: kebabToCamelCase(cleaned), type: 'component' };
   }
   if (base.endsWith('.service.ts')) {
@@ -42,7 +42,10 @@ function getContextInfo(filename) {
   }
   if (base.endsWith('.directive.ts')) {
     const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.directive');
-    return { prefix: `directives.${kebabToCamelCase(cleaned)}`, type: 'directive' };
+    return {
+      prefix: `directives.${kebabToCamelCase(cleaned)}`,
+      type: 'directive',
+    };
   }
   return null;
 }
@@ -57,7 +60,15 @@ function checkKey(key, contextInfo, context, node) {
     context.report({
       node,
       messageId: 'notEnoughParts',
-      data: { key, minParts: minPartsRequired, type, example: minPartsRequired === 2 ? 'signIn.warningAccountLockSoon' : 'services.warningAccountLockSoon.example' },
+      data: {
+        key,
+        minParts: minPartsRequired,
+        type,
+        example:
+          minPartsRequired === 2
+            ? 'signIn.warningAccountLockSoon'
+            : 'services.warningAccountLockSoon.example',
+      },
     });
     return;
   }
@@ -77,13 +88,23 @@ function checkKey(key, contextInfo, context, node) {
       context.report({
         node,
         messageId: 'notEnoughParts',
-        data: { key, minParts: 2, type, example: 'signIn.warningAccountLockSoon' },
+        data: {
+          key,
+          minParts: 2,
+          type,
+          example: 'signIn.warningAccountLockSoon',
+        },
       });
     } else if (keyParts.length > 2) {
       context.report({
         node,
         messageId: 'tooManyParts',
-        data: { key, maxParts: 2, type, example: 'signIn.warningAccountLockSoon' },
+        data: {
+          key,
+          maxParts: 2,
+          type,
+          example: 'signIn.warningAccountLockSoon',
+        },
       });
     }
   } else {
@@ -91,13 +112,23 @@ function checkKey(key, contextInfo, context, node) {
       context.report({
         node,
         messageId: 'notEnoughParts',
-        data: { key, minParts: 3, type, example: 'services.warningAccountLockSoon.example' },
+        data: {
+          key,
+          minParts: 3,
+          type,
+          example: 'services.warningAccountLockSoon.example',
+        },
       });
     } else if (keyParts.length > 3) {
       context.report({
         node,
         messageId: 'tooManyParts',
-        data: { key, maxParts: 3, type, example: 'services.warningAccountLockSoon.example' },
+        data: {
+          key,
+          maxParts: 3,
+          type,
+          example: 'services.warningAccountLockSoon.example',
+        },
       });
     }
   }
@@ -122,7 +153,8 @@ function extractKeysFromTemplate(template) {
     }
   }
   // structural directive *transloco="... read: 'key'"
-  const structuralPattern = /\bread\s*:\s*['"]([^\s'".]+[\w.-]*\.[^\s'".]+)['"]/g;
+  const structuralPattern =
+    /\bread\s*:\s*['"]([^\s'".]+[\w.-]*\.[^\s'".]+)['"]/g;
   while ((match = structuralPattern.exec(template)) !== null) {
     keys.push(match[1]);
   }
@@ -147,13 +179,17 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description: 'Enforce i18n key naming convention based on file type and name (TypeScript and HTML)',
+      description:
+        'Enforce i18n key naming convention based on file type and name (TypeScript and HTML)',
       category: 'Best Practices',
     },
     messages: {
-      mismatchedKey: "Key '{{ key }}' does not follow naming convention. Expected the i18n key to start with '{{ expectedPrefix }}.'",
-      tooManyParts: "Key '{{ key }}' is too long. Max depth for a {{ type }} is {{ maxParts }}. For example, '{{ example }}'",
-      notEnoughParts: "Key '{{ key }}' is too short. Min depth for a {{ type }} is {{ minParts }}. For example, '{{ example }}'",
+      mismatchedKey:
+        "Key '{{ key }}' does not follow naming convention. Expected the i18n key to start with '{{ expectedPrefix }}.'",
+      tooManyParts:
+        "Key '{{ key }}' is too long. Max depth for a {{ type }} is {{ maxParts }}. For example, '{{ example }}'",
+      notEnoughParts:
+        "Key '{{ key }}' is too short. Min depth for a {{ type }} is {{ minParts }}. For example, '{{ example }}'",
     },
     schema: [],
   },
@@ -213,13 +249,16 @@ export default createRule({
         if (
           node.key.type === 'Identifier' &&
           node.key.name === 'template' &&
-          (node.value.type === 'Literal' || node.value.type === 'TemplateLiteral')
+          (node.value.type === 'Literal' ||
+            node.value.type === 'TemplateLiteral')
         ) {
           let templateContent = '';
           if (node.value.type === 'Literal') {
             templateContent = String(node.value.value);
           } else {
-            templateContent = node.value.quasis.map((q) => q.value.raw).join('');
+            templateContent = node.value.quasis
+              .map((q) => q.value.raw)
+              .join('');
           }
           const keys = extractKeysFromTemplate(templateContent);
           keys.forEach((k) => checkKey(k, contextInfo, context, node.value));
@@ -279,10 +318,14 @@ export default createRule({
         const keys = extractKeysFromExpression(node.value.source);
         keys.forEach((k) => checkKey(k, contextInfo, context, node));
       },
-    }
+    };
 
     ngTemplateHandlers.BoundText = function (node) {
-      if (node.value && node.value.source && node.value.source.includes('transloco')) {
+      if (
+        node.value &&
+        node.value.source &&
+        node.value.source.includes('transloco')
+      ) {
         const keys = extractKeysFromExpression(node.value.source);
         keys.forEach((k) => checkKey(k, contextInfo, context, node));
       }
