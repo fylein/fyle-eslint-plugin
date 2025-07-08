@@ -20,7 +20,7 @@ A clear and concise description of what actually happened.
 ## Environment
 
 - **OS**: [e.g. macOS, Windows, Linux]
-- **Node.js Version**: [e.g. 18.0.0]
+- **Node.js Version**: [e.g. 22.0.0]
 - **ESLint Version**: [e.g. 9.0.0]
 - **Plugin Version**: [e.g. 1.0.0]
 
@@ -47,6 +47,7 @@ Please share your ESLint configuration:
 ## Additional Context
 
 Add any other context about the problem here, such as:
+
 - Screenshots
 - Related issues
 - Workarounds you've tried
@@ -55,4 +56,4 @@ Add any other context about the problem here, such as:
 
 - [ ] I have searched existing issues to avoid duplicates
 - [ ] I have provided all the requested information
-- [ ] I can reproduce this issue consistently 
+- [ ] I can reproduce this issue consistently
