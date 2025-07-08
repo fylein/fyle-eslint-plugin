@@ -50,9 +50,14 @@ function getContextInfo(filename) {
   return null;
 }
 
-function checkKey(key, contextInfo, context, node) {
+function checkKey(key, contextInfo, context, node, ignoredPrefixes) {
   const { prefix, type } = contextInfo;
   const keyParts = key.split('.');
+
+  // Check if key should be ignored based on ignoredPrefixes
+  if (ignoredPrefixes.some((ignoredPrefix) => key.startsWith(ignoredPrefix))) {
+    return;
+  }
 
   // Reject keys with empty segments (e.g., trailing dot, consecutive dots)
   if (keyParts.some((p) => p.length === 0)) {
@@ -191,13 +196,31 @@ export default createRule({
       notEnoughParts:
         "Key '{{ key }}' is too short. Min depth for a {{ type }} is {{ minParts }}. For example, '{{ example }}'",
     },
-    schema: [],
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          ignoredPrefixes: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description:
+              'Array of key prefixes to ignore (e.g., ["common.", "shared."])',
+          },
+        },
+        additionalProperties: false,
+      },
+    ],
   },
-  defaultOptions: [],
+  defaultOptions: [{ ignoredPrefixes: [] }],
   create(context) {
     const filename = context.filename ?? '';
     const contextInfo = getContextInfo(filename);
     if (!contextInfo) return {};
+
+    const options = context.options[0] || {};
+    const ignoredPrefixes = options.ignoredPrefixes || [];
 
     const variableTracker = new Map();
 
@@ -261,7 +284,9 @@ export default createRule({
               .join('');
           }
           const keys = extractKeysFromTemplate(templateContent);
-          keys.forEach((k) => checkKey(k, contextInfo, context, node.value));
+          keys.forEach((k) =>
+            checkKey(k, contextInfo, context, node.value, ignoredPrefixes)
+          );
         }
       },
       CallExpression(node) {
@@ -278,18 +303,30 @@ export default createRule({
         if (!arg) return;
 
         if (arg.type === 'Literal' && typeof arg.value === 'string') {
-          checkKey(arg.value, contextInfo, context, arg);
+          checkKey(arg.value, contextInfo, context, arg, ignoredPrefixes);
         } else if (arg.type === 'Identifier') {
           if (variableTracker.has(arg.name)) {
             const literals = variableTracker.get(arg.name);
             for (const literalNode of literals) {
-              checkKey(literalNode.value, contextInfo, context, literalNode);
+              checkKey(
+                literalNode.value,
+                contextInfo,
+                context,
+                literalNode,
+                ignoredPrefixes
+              );
             }
           }
         } else if (arg.type === 'ConditionalExpression') {
           const literals = findLiteralsInTsExpression(arg);
           for (const literalNode of literals) {
-            checkKey(literalNode.value, contextInfo, context, literalNode);
+            checkKey(
+              literalNode.value,
+              contextInfo,
+              context,
+              literalNode,
+              ignoredPrefixes
+            );
           }
         }
       },
@@ -302,21 +339,27 @@ export default createRule({
         if (!node.value.includes('| transloco')) return;
 
         const keys = extractKeysFromExpression(node.value);
-        keys.forEach((k) => checkKey(k, contextInfo, context, node));
+        keys.forEach((k) =>
+          checkKey(k, contextInfo, context, node, ignoredPrefixes)
+        );
       },
 
       TextAttribute(node) {
         // structural directive like *transloco="... read: 'key'"
         if (node.name !== 'transloco' && !/transloco/i.test(node.value)) return;
         const keys = extractKeysFromExpression(node.value);
-        keys.forEach((k) => checkKey(k, contextInfo, context, node));
+        keys.forEach((k) =>
+          checkKey(k, contextInfo, context, node, ignoredPrefixes)
+        );
       },
 
       BoundAttribute(node) {
         if (!node.value || !node.value.source) return;
         if (!node.value.source.includes('transloco')) return;
         const keys = extractKeysFromExpression(node.value.source);
-        keys.forEach((k) => checkKey(k, contextInfo, context, node));
+        keys.forEach((k) =>
+          checkKey(k, contextInfo, context, node, ignoredPrefixes)
+        );
       },
     };
 
@@ -327,7 +370,9 @@ export default createRule({
         node.value.source.includes('transloco')
       ) {
         const keys = extractKeysFromExpression(node.value.source);
-        keys.forEach((k) => checkKey(k, contextInfo, context, node));
+        keys.forEach((k) =>
+          checkKey(k, contextInfo, context, node, ignoredPrefixes)
+        );
       }
     };
 
