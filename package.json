@@ -1,0 +1,50 @@
+{
+  "name": "eslint-plugin-fyle",
+  "version": "1.0.0",
+  "description": "Custom ESLint rules and configurations for Fyle",
+  "private": true,
+  "exports": {
+    ".": "./packages/core/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fylein/eslint-plugin-fyle.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
+  },
+  "devDependencies": {
+    "@angular-eslint/template-parser": "^20.1.1",
+    "@babel/core": "^7.28.0",
+    "@babel/eslint-parser": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@types/jest": "^29.0.0",
+    "@typescript-eslint/rule-tester": "^8.34.0",
+    "@typescript-eslint/utils": "^8.34.0",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.5",
+    "husky": "^8.0.3",
+    "jest": "^29.0.0",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "linting",
+    "rules"
+  ],
+  "author": "Fyle Team",
+  "license": "MIT",
+  "type": "module"
+}
