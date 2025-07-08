@@ -18,9 +18,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src --ext .js",
-    "clean": "echo 'No clean step needed'",
-    "format": "prettier --write src/",
-    "type-check": "echo 'No type checking needed for JavaScript'"
+    "format": "prettier --write src/"
   },
   "devDependencies": {
     "babel-jest": "^30.0.4"
@@ -40,4 +38,4 @@
   ],
   "author": "Fyle Team",
   "license": "MIT"
-} 
+}

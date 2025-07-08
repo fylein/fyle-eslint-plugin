@@ -14,12 +14,8 @@
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "format": "npm run format --workspaces",
-    "type-check": "npm run type-check --workspaces",
-    "clean": "npm run clean --workspaces",
     "prepare": "husky install",
-    "publish": "npm run publish --workspaces --if-present",
-    "pre-commit": "lint-staged",
-    "pre-push": "npm test"
+    "pre-commit": "lint-staged"
   },
   "devDependencies": {
     "@angular-eslint/template-parser": "^20.1.1",
