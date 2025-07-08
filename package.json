@@ -4,7 +4,7 @@
   "description": "Custom ESLint rules and configurations for Fyle",
   "private": true,
   "exports": {
-    "./core": "./packages/core/src/index.js"
+    ".": "./packages/core/src/index.js"
   },
   "repository": {
     "type": "git",
