@@ -67,12 +67,12 @@ export default [
 
 ```javascript
 // eslint.config.js
-import corePlugin from 'eslint-plugin-fyle-core';
+import fyleCore from 'eslint-plugin-fyle';
 
 export default [
   {
     plugins: {
-      'fyle-core': corePlugin,
+      'fyle-core': fyleCore,
     },
     rules: {
       'fyle-core/no-hardcoded-strings': [

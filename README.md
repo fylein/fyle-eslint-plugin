@@ -12,10 +12,10 @@ This monorepo contains the following packages:
 
 ## Installation
 
-Install the core plugin:
+Install the plugin from GitHub:
 
 ```bash
-npm install --save-dev eslint-plugin-fyle-core
+npm install --save-dev fylein/eslint-plugin-fyle#master
 ```
 
 ## Usage
@@ -24,18 +24,18 @@ Add the plugin to your ESLint configuration:
 
 ```javascript
 // eslint.config.js
-import corePlugin from 'eslint-plugin-fyle-core';
+import fyleCore from 'eslint-plugin-fyle';
 
 export default [
   {
     plugins: {
-      'fyle-core': corePlugin
+      'fyle-core': fyleCore,
     },
     rules: {
       'fyle-core/i18n-key-naming-convention': 'error',
-      'fyle-core/no-hardcoded-strings': 'error'
-    }
-  }
+      'fyle-core/no-hardcoded-strings': 'error',
+    },
+  },
 ];
 ```
 
