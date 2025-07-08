@@ -1,7 +1,8 @@
 import { ESLintUtils, AST_NODE_TYPES } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/no-hardcoded-strings/README.md`,
+  () =>
+    `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/no-hardcoded-strings/README.md`
 );
 
 const RULE_NAME = 'no-hardcoded-strings';
@@ -20,7 +21,8 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description: 'Disallows hard-coded user-facing text. Works seamlessly with eslint-plugin-diff.',
+      description:
+        'Disallows hard-coded user-facing text. Works seamlessly with eslint-plugin-diff.',
       recommended: 'recommended',
     },
     fixable: 'code',
@@ -28,24 +30,35 @@ export default createRule({
       {
         type: 'object',
         properties: {
-          ignorePattern: {
+          nonUserFacingPattern: {
             type: 'string',
-            description: 'RegExp pattern for strings to ignore.',
+            description:
+              'RegExp pattern for non-user-facing property names to ignore.',
           },
         },
         additionalProperties: false,
       },
     ],
     messages: {
-      noHardString: 'Hard-coded string "{{text}}" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+      noHardString:
+        'Hard-coded string "{{text}}" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
     },
   },
   defaultOptions: [{}],
 
   create(context) {
-    const { ignorePattern } = context.options[0] || {};
-    // Compile ignore pattern with unicode flag to keep behaviour consistent with hasAlphabeticChars
-    const ignoreRegExp = ignorePattern ? new RegExp(ignorePattern, 'u') : null;
+    const { nonUserFacingPattern } = context.options[0] || {};
+
+    // Default non-user-facing pattern
+    const defaultNonUserFacingPattern =
+      '(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)';
+
+    // Combine default pattern with custom pattern if provided
+    const combinedPattern = nonUserFacingPattern
+      ? `(${defaultNonUserFacingPattern}|${nonUserFacingPattern})`
+      : defaultNonUserFacingPattern;
+
+    const nonUserFacingRegExp = new RegExp(combinedPattern, 'i');
 
     // Translation keys are usually dot or underscore separated; hyphens alone shouldn't be considered a key
     const translationKeyPattern = /^[a-z0-9]+([._][a-z0-9]+)+$/;
@@ -53,17 +66,14 @@ export default createRule({
     // Track toast service variables by their TypeScript type annotations
     // const toastServiceVars = new Set();
 
-    const isTestFile = context.filename && /\.(spec|test)\.[jt]s$/.test(context.filename);
+    const isTestFile =
+      context.filename && /\.(spec|test)\.[jt]s$/.test(context.filename);
 
     function report(node, text) {
-      if (ignoreRegExp && ignoreRegExp.test(text)) {
-        return;
-      }
-      
       // Skip technical/system strings that are not user-facing
-      const technicalStringPattern = /^(\/|#|https?:\/\/|access_denied|error_|success_|warning_|info_|debug_|data-|aria-)/i;
+      const technicalStringPattern =
+        /^(\/|#|https?:\/\/|access_denied|error_|success_|warning_|info_|debug_|data-|aria-)/i;
       const trimmedText = text.trim();
-      
 
       // Ignore strings with underscores or hyphens, as they are likely technical identifiers
       if (/[_-]/.test(trimmedText)) {
@@ -82,10 +92,13 @@ export default createRule({
         return;
       }
 
-      if (technicalStringPattern.test(trimmedText) || translationKeyPattern.test(trimmedText)) {
+      if (
+        technicalStringPattern.test(trimmedText) ||
+        translationKeyPattern.test(trimmedText)
+      ) {
         return;
       }
-      
+
       context.report({
         node,
         messageId: 'noHardString',
@@ -130,7 +143,7 @@ export default createRule({
 
     return {
       // For standalone HTML template files, use Angular template AST nodes
-      'Text'(node) {
+      Text(node) {
         // Only process if this is an HTML file
         if (context.filename && context.filename.endsWith('.html')) {
           const text = node.value.trim();
@@ -141,13 +154,21 @@ export default createRule({
       },
 
       // Handle hardcoded strings in HTML attributes
-      'TextAttribute'(node) {
+      TextAttribute(node) {
         if (context.filename && context.filename.endsWith('.html')) {
           const attrName = node.name;
           const attrValue = node.value;
-          
+
           // Check user-facing attributes
-          if (['placeholder', 'title', 'alt', 'aria-label', 'aria-description'].includes(attrName)) {
+          if (
+            [
+              'placeholder',
+              'title',
+              'alt',
+              'aria-label',
+              'aria-description',
+            ].includes(attrName)
+          ) {
             if (hasAlphabeticChars(attrValue)) {
               report(node, attrValue);
             }
@@ -156,27 +177,32 @@ export default createRule({
       },
 
       // Handle Angular property bindings with hardcoded strings
-      'BoundAttribute'(node) {
+      BoundAttribute(node) {
         if (context.filename && context.filename.endsWith('.html')) {
           const bindingName = node.name;
-          
+
           // Skip non-user-facing property bindings using regex pattern
-          const nonUserFacingPattern = /(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)/i;
-          
-          if (nonUserFacingPattern.test(bindingName)) {
+          if (nonUserFacingRegExp.test(bindingName)) {
             return;
           }
-          
+
           // Check if the binding contains a pipe (translation)
           if (node.value && node.value.ast) {
             // Skip if it contains transloco pipe (translation keys)
             const sourceSpan = node.value.source;
-            if (sourceSpan && (sourceSpan.includes('| transloco') || sourceSpan.includes('|transloco'))) {
+            if (
+              sourceSpan &&
+              (sourceSpan.includes('| transloco') ||
+                sourceSpan.includes('|transloco'))
+            ) {
               return;
             }
-            
+
             // Check for literal strings in the binding
-            if (node.value.ast.type === 'LiteralPrimitive' && typeof node.value.ast.value === 'string') {
+            if (
+              node.value.ast.type === 'LiteralPrimitive' &&
+              typeof node.value.ast.value === 'string'
+            ) {
               const stringValue = node.value.ast.value;
               if (hasAlphabeticChars(stringValue)) {
                 report(node, stringValue);
@@ -234,28 +260,36 @@ export default createRule({
       */
 
       // Check individual string literals in TypeScript code
-      'Literal'(node) {
+      Literal(node) {
         if (isTestFile) {
           return;
         }
         if (context.filename && context.filename.endsWith('.ts')) {
-          if (typeof node.value === 'string' && hasAlphabeticChars(node.value)) {
+          if (
+            typeof node.value === 'string' &&
+            hasAlphabeticChars(node.value)
+          ) {
             // Check if this is a property definition
-            if (node.parent && node.parent.type === AST_NODE_TYPES.PropertyDefinition) {
+            if (
+              node.parent &&
+              node.parent.type === AST_NODE_TYPES.PropertyDefinition
+            ) {
               // Skip private properties
-              if (node.parent.accessibility === 'private' || node.parent.readonly) {
+              if (
+                node.parent.accessibility === 'private' ||
+                node.parent.readonly
+              ) {
                 return;
               }
 
               // Check if the property name is non-user-facing
               if (node.parent.key.type === AST_NODE_TYPES.Identifier) {
                 const propertyName = node.parent.key.name;
-                const nonUserFacingPattern = /(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)/i;
-                if (nonUserFacingPattern.test(propertyName)) {
+                if (nonUserFacingRegExp.test(propertyName)) {
                   return;
                 }
               }
-              
+
               report(node, node.value);
             }
           }
@@ -263,7 +297,7 @@ export default createRule({
       },
 
       // Check template literals
-      'TemplateLiteral'() {
+      TemplateLiteral() {
         if (isTestFile) {
           return;
         }

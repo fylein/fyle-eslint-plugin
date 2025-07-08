@@ -42,7 +42,7 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 ### Install Dependencies
 
 ```bash
-npm install
+npm ci
 ```
 
 ### Verify Setup
@@ -95,7 +95,8 @@ git checkout -b docs/your-docs-update
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => `https://github.com/fylein/eslint-plugin-fyle/blob/main/packages/docs/rules/your-rule.md`
+  () =>
+    `https://github.com/fylein/eslint-plugin-fyle/blob/main/packages/docs/rules/your-rule.md`
 );
 
 export default createRule({
@@ -193,6 +194,7 @@ type(scope): description
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -202,6 +204,7 @@ Types:
 - `chore`: Build/tooling changes
 
 Examples:
+
 ```
 feat(core): add new i18n rule for Angular templates
 fix(core): resolve false positive in no-hardcoded-strings rule
@@ -220,20 +223,24 @@ docs: update installation instructions
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Tests added/updated
 - [ ] All tests pass
 - [ ] Manual testing completed
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
@@ -268,4 +275,4 @@ npm run publish
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License. 
+By contributing, you agree that your contributions will be licensed under the MIT License.

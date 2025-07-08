@@ -15,14 +15,14 @@ This rule follows the same pattern as successful third-party ESLint packages - i
 export default [
   {
     extends: [
-      "plugin:diff/diff", // Handles diff filtering automatically
+      'plugin:diff/diff', // Handles diff filtering automatically
       // ... other configs
     ],
     rules: {
-      "custom/no-hardcoded-strings": "error", // Works normally
-      "import/no-unresolved": "error",        // Third-party rules
-    }
-  }
+      'custom/no-hardcoded-strings': 'error', // Works normally
+      'import/no-unresolved': 'error', // Third-party rules
+    },
+  },
 ];
 ```
 
@@ -61,27 +61,67 @@ export default [
 - **Non-user-facing properties & decorator metadata**: CSS classes, form controls, icons, sizes, **selectors**, etc.
 - **Technical strings**: URLs, routes, error codes, data attributes
 - **Test/Spec files**: Linting is skipped for `*.spec.ts` and `*.test.ts`
-- **Ignored patterns**: Configurable via `ignorePattern` option
+- **Non-user-facing properties**: Configurable via `nonUserFacingPattern` option
 
 ## Configuration
 
 ```javascript
 // eslint.config.js
-import angularPlugin from 'eslint-plugin-fyle-angular';
+import corePlugin from 'eslint-plugin-fyle-core';
 
 export default [
   {
     plugins: {
-      'fyle-angular': angularPlugin
+      'fyle-core': corePlugin,
     },
     rules: {
-      'fyle-angular/no-hardcoded-strings': ['error', {
-        ignorePattern: '^©|@|\\$' // Optional: ignore copyright, emails, variables
-      }]
-    }
-  }
+      'fyle-core/no-hardcoded-strings': [
+        'error',
+        {
+          nonUserFacingPattern:
+            '(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout|customProperty)', // Optional: custom non-user-facing property pattern
+        },
+      ],
+    },
+  },
 ];
 ```
+
+### Options
+
+| Option                 | Type     | Default           | Description                                                  |
+| ---------------------- | -------- | ----------------- | ------------------------------------------------------------ |
+| `nonUserFacingPattern` | `string` | See default below | RegExp pattern for non-user-facing property names to ignore. |
+
+### Default nonUserFacingPattern
+
+The default pattern ignores these property types:
+
+```
+(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)
+```
+
+### Custom nonUserFacingPattern Examples
+
+```javascript
+// Add custom properties to ignore (extends default pattern)
+'fyle-core/no-hardcoded-strings': ['error', {
+  nonUserFacingPattern: '(customProperty|dataAttribute|myProperty)'
+}]
+
+// Add multiple custom properties
+'fyle-core/no-hardcoded-strings': ['error', {
+  nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)'
+}]
+
+// Add specific patterns
+'fyle-core/no-hardcoded-strings': ['error', {
+  nonUserFacingPattern: '(myCustomProperty|anotherProperty|thirdProperty)'
+}]
+```
+
+**Note**: The custom pattern is **combined with** the default pattern, not replaced. So the final pattern will be:
+`(defaultPattern|yourCustomPattern)`
 
 ## Usage with eslint-plugin-diff
 
@@ -125,9 +165,9 @@ ESLINT_PLUGIN_DIFF_COMMIT=main npx eslint --ext .ts,.html .
 ```typescript
 // Private properties are ignored
 class Component {
-  private secret = "Internal value";
+  private secret = 'Internal value';
   private test: string;
-  
+
   ngOnInit() {
     this.test = `Hello ${this.user?.name}`; // Private property assignment
   }
@@ -141,8 +181,8 @@ class ValidComponent {
 
 // Special characters only
 class SpecialChars {
-  separator = "***";
-  bullets = "•••";
+  separator = '***';
+  bullets = '•••';
 }
 
 // Technical strings are ignored
@@ -183,7 +223,7 @@ class MessageComponent {
 // Public property assignments
 class AppComponent {
   message: string;
-  
+
   ngOnInit() {
     this.message = 'Welcome!'; // ❌ Error (public property)
   }
@@ -206,7 +246,7 @@ class ComponentRefTest {
 // Toast service calls with hardcoded strings
 class ToastExample {
   constructor(private toastService: ToastMessageService) {}
-  
+
   showError() {
     this.toastService.showErrorToast('Something went wrong'); // ❌ Error
   }
@@ -251,6 +291,7 @@ This rule follows the **standard third-party ESLint package pattern**:
 ### Performance
 
 When `eslint-plugin-diff` is active:
+
 - ESLint only processes changed files/lines
 - Rule only sees modified AST nodes
 - **3-5x faster** than full file processing
@@ -266,16 +307,19 @@ When `eslint-plugin-diff` is active:
 ## Troubleshooting
 
 ### Rule not detecting changes
+
 - Ensure `eslint-plugin-diff` is configured correctly
 - Check that `ESLINT_PLUGIN_DIFF_COMMIT` environment variable is set
 - Verify file extensions are included in ESLint configuration
 
 ### False positives
+
 - Use `ignorePattern` option to exclude specific patterns
 - Check if strings are truly user-facing
 - Consider if the string should use translation keys
 
 ### Performance issues
+
 - Rule is optimized for diff mode - performance issues likely indicate configuration problems
 - Ensure `eslint-plugin-diff` is active for large codebases
 

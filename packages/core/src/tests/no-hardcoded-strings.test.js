@@ -40,16 +40,12 @@ ruleTester.run('no-hardcoded-strings', rule, {
         } 
       }`,
     },
-    
+
     // Class: String literal initialized with translocoService is allowed
     {
-        code: `@Component({ template: '<h1>{{ title }}</h1>' }) class F { title = this.translocoService.translate('some.key'); constructor(private translocoService: any) {} }`,
+      code: `@Component({ template: '<h1>{{ title }}</h1>' }) class F { title = this.translocoService.translate('some.key'); constructor(private translocoService: any) {} }`,
     },
-    // Options: ignorePattern allows specific strings
-    {
-      code: `@Component({ template: '<div>© 2025</div>' }) class G {}`,
-      options: [{ ignorePattern: '^©|@' }],
-    },
+
     // Strings with only special characters should be ignored
     `class J { specialChars = "!!!"; }`,
     `class K { dots = "..."; }`,
@@ -145,6 +141,51 @@ ruleTester.run('no-hardcoded-strings', rule, {
         export class AppComponent {
           title = 'my-app';
         }`,
+    },
+    // Custom nonUserFacingPattern: custom properties should be ignored
+    {
+      code: `class CustomPropertyTest { 
+        setupComponent() { 
+          componentRef.instance.customProperty = 'some value';
+          componentRef.instance.dataAttribute = 'data-value';
+        } 
+      }`,
+      options: [
+        {
+          nonUserFacingPattern:
+            '(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout|customProperty|dataAttribute)',
+        },
+      ],
+    },
+    // Custom nonUserFacingPattern: completely different pattern (should work because it's combined with default)
+    {
+      code: `class TechnicalPropertyTest { 
+        setupComponent() { 
+          componentRef.instance.technical = 'technical value';
+          componentRef.instance.internal = 'internal value';
+          componentRef.instance.config = 'config value';
+        } 
+      }`,
+      options: [
+        {
+          nonUserFacingPattern:
+            '(technical|internal|config|setting|property|attribute)',
+        },
+      ],
+    },
+    // Custom nonUserFacingPattern: property definitions with custom pattern (should work because it's combined with default)
+    {
+      code: `class PropertyDefinitionTest { 
+        technical = 'technical value';
+        internal = 'internal value';
+        config = 'config value';
+      }`,
+      options: [
+        {
+          nonUserFacingPattern:
+            '(technical|internal|config|setting|property|attribute)',
+        },
+      ],
     },
   ],
   invalid: [
@@ -252,6 +293,42 @@ ruleTester.run('no-hardcoded-strings', rule, {
         { messageId: 'noHardString', data: { text: 'Delete Item' } },
         { messageId: 'noHardString', data: { text: 'Welcome to our app' } }
       ],
+    },
+    // Custom nonUserFacingPattern: properties not in pattern should still be flagged
+    {
+      code: `class CustomPropertyTest { 
+        setupComponent() { 
+          componentRef.instance.title = 'User-facing title';
+          componentRef.instance.message = 'User-facing message';
+        } 
+      }`,
+      options: [{ nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)' }],
+      errors: [
+        { messageId: 'noHardString', data: { text: 'User-facing title' } },
+        { messageId: 'noHardString', data: { text: 'User-facing message' } }
+      ],
+    },
+    // Custom nonUserFacingPattern: property definitions not in pattern should be flagged
+    {
+      code: `class PropertyDefinitionTest { 
+        title = 'User-facing title';
+        message = 'User-facing message';
+      }`,
+      options: [{ nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)' }],
+      errors: [
+        { messageId: 'noHardString', data: { text: 'User-facing title' } },
+        { messageId: 'noHardString', data: { text: 'User-facing message' } }
+      ],
+    },
+    // Custom nonUserFacingPattern: default pattern properties should still be ignored when using custom pattern
+    {
+      code: `class DefaultPatternTest { 
+        setupComponent() { 
+          componentRef.instance.class = 'some class';
+          componentRef.instance.style = 'some style';
+        } 
+      }`,
+      options: [{ nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)' }],
     },
     */
   ],
