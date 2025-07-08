@@ -1,0 +1,43 @@
+{
+  "name": "eslint-plugin-fyle-core",
+  "version": "1.0.0",
+  "description": "Core ESLint rules for Angular projects with i18n best practices",
+  "main": "src/index.js",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fylein/eslint-plugin-fyle.git",
+    "directory": "packages/core"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src --ext .js",
+    "clean": "echo 'No clean step needed'",
+    "format": "prettier --write src/",
+    "type-check": "echo 'No type checking needed for JavaScript'"
+  },
+  "devDependencies": {
+    "babel-jest": "^30.0.4"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0",
+    "@angular/core": ">=17.0.0",
+    "@angular/common": ">=17.0.0"
+  },
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "angular",
+    "i18n",
+    "internationalization",
+    "fyle"
+  ],
+  "author": "Fyle Team",
+  "license": "MIT"
+} 
