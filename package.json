@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Custom ESLint rules and configurations for Fyle",
   "private": true,
+  "exports": {
+    "./core": "./packages/core/src/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/fylein/eslint-plugin-fyle.git"
