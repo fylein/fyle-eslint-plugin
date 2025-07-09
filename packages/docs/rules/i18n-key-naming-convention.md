@@ -106,7 +106,7 @@ this.translate.instant('auth.errorInvalidPassword');
 
 ```js
 // eslint.config.js
-import fyleCore from 'eslint-plugin-fyle';
+import fyleCore from 'fyle-eslint-plugin';
 
 export default [
   {

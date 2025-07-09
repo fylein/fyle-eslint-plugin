@@ -1,4 +1,4 @@
-# eslint-plugin-fyle
+# fyle-eslint-plugin
 
 [![CI](https://github.com/fylein/fyle-eslint-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/fylein/fyle-eslint-plugin/actions/workflows/ci.yml)
 
@@ -15,7 +15,11 @@ This monorepo contains the following packages:
 Install the plugin from GitHub:
 
 ```bash
+# Install from master branch
 npm install --save-dev fylein/fyle-eslint-plugin#master
+
+# Or install from a specific tag/version
+npm install --save-dev fylein/fyle-eslint-plugin#v1.0.0
 ```
 
 ## Usage
@@ -24,7 +28,7 @@ Add the plugin to your ESLint configuration:
 
 ```javascript
 // eslint.config.js
-import fyleCore from 'eslint-plugin-fyle';
+import fyleCore from 'fyle-eslint-plugin';
 
 export default [
   {

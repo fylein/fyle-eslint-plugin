@@ -4,7 +4,7 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 
 ## Available Rules
 
-### Core Package (`eslint-plugin-fyle`)
+### Core Package (`fyle-eslint-plugin`)
 
 | Rule                         | Description                                                                                      | Documentation                                               |
 | ---------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
@@ -23,7 +23,7 @@ npm install --save-dev fylein/fyle-eslint-plugin#master
 
 ```javascript
 // eslint.config.js
-import fyleCore from 'eslint-plugin-fyle';
+import fyleCore from 'fyle-eslint-plugin';
 
 export default [
   {
