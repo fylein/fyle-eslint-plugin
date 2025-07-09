@@ -1,6 +1,6 @@
 # eslint-plugin-fyle
 
-[![CI](https://github.com/fylein/eslint-plugin-fyle/actions/workflows/ci.yml/badge.svg)](https://github.com/fylein/eslint-plugin-fyle/actions/workflows/ci.yml)
+[![CI](https://github.com/fylein/fyle-eslint-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/fylein/fyle-eslint-plugin/actions/workflows/ci.yml)
 
 Custom ESLint rules and configurations for Fyle projects.
 
@@ -15,7 +15,7 @@ This monorepo contains the following packages:
 Install the plugin from GitHub:
 
 ```bash
-npm install --save-dev fylein/eslint-plugin-fyle#master
+npm install --save-dev fylein/fyle-eslint-plugin#master
 ```
 
 ## Usage
@@ -50,7 +50,7 @@ export default [
 - **Testing**: `npm test` (runs Jest tests in all packages)
 - **Type Checking**: `npm run type-check` (if applicable)
 - **Pre-commit hooks**: Automatically run lint, format, and relevant tests on staged files using Husky and lint-staged.
-- **CI**: All PRs and pushes to `main`/`develop` run lint, type-check, and tests via [GitHub Actions](.github/workflows/ci.yml).
+- **CI**: All PRs and pushes to `master` run lint, type-check, and tests via [GitHub Actions](.github/workflows/ci.yml).
 
 ## Contributing
 
