@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-fyle",
+  "name": "fyle-eslint-plugin",
   "version": "1.0.0",
   "description": "Custom ESLint rules and configurations for Fyle",
   "private": true,
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fylein/eslint-plugin-fyle.git"
+    "url": "https://github.com/fylein/fyle-eslint-plugin.git"
   },
   "workspaces": [
     "packages/*"

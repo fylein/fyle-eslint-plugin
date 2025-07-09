@@ -29,12 +29,12 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/eslint-plugin-fyle.git
-   cd eslint-plugin-fyle
+   git clone https://github.com/YOUR_USERNAME/fyle-eslint-plugin.git
+   cd fyle-eslint-plugin
    ```
 3. Add the upstream remote:
    ```bash
-   git remote add upstream https://github.com/fylein/eslint-plugin-fyle.git
+   git remote add upstream https://github.com/fylein/fyle-eslint-plugin.git
    ```
 
 ## Development Setup
@@ -95,8 +95,7 @@ git checkout -b docs/your-docs-update
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  () =>
-    `https://github.com/fylein/eslint-plugin-fyle/blob/main/packages/docs/rules/your-rule.md`
+  () => `https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/your-rule.md`,
 );
 
 export default createRule({

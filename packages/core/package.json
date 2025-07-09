@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-fyle-core",
+  "name": "@fyle/eslint-plugin",
   "version": "1.0.0",
   "description": "Core ESLint rules for Angular projects with i18n best practices",
   "main": "src/index.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fylein/eslint-plugin-fyle.git",
+    "url": "https://github.com/fylein/fyle-eslint-plugin.git",
     "directory": "packages/core"
   },
   "scripts": {

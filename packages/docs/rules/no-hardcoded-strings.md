@@ -67,7 +67,7 @@ export default [
 
 ```javascript
 // eslint.config.js
-import fyleCore from 'eslint-plugin-fyle';
+import fyleCore from 'fyle-eslint-plugin';
 
 export default [
   {
