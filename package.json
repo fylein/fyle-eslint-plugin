@@ -1,6 +1,6 @@
 {
   "name": "fyle-eslint-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Custom ESLint rules and configurations for Fyle",
   "private": true,
   "exports": {
