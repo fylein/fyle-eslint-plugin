@@ -168,8 +168,7 @@ ruleTester.run('no-hardcoded-strings', rule, {
       }`,
       options: [
         {
-          nonUserFacingPattern:
-            '(technical|internal|config|setting|property|attribute)',
+          nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)',
         },
       ],
     },
@@ -182,8 +181,7 @@ ruleTester.run('no-hardcoded-strings', rule, {
       }`,
       options: [
         {
-          nonUserFacingPattern:
-            '(technical|internal|config|setting|property|attribute)',
+          nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)',
         },
       ],
     },
@@ -331,5 +329,101 @@ ruleTester.run('no-hardcoded-strings', rule, {
       options: [{ nonUserFacingPattern: '(technical|internal|config|setting|property|attribute)' }],
     },
     */
+    // ReDoS protection: dangerous pattern should be rejected and fall back to default
+    {
+      code: `class DangerousPatternTest { 
+        title = 'This should be flagged as hardcoded';
+        message = 'This should also be flagged';
+      }`,
+      options: [
+        {
+          nonUserFacingPattern: '(a*)*', // Dangerous ReDoS pattern
+        },
+      ],
+      errors: [
+        {
+          message:
+            'Invalid or unsafe nonUserFacingPattern: "(a*)*". Pattern contains disallowed characters. Using default pattern only.',
+        },
+        {
+          message:
+            'Hard-coded string "This should be flagged as hardcoded" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+        {
+          message:
+            'Hard-coded string "This should also be flagged" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+      ],
+    },
+    // ReDoS protection: test various dangerous patterns
+    {
+      code: `class ReDoSTestPatterns { 
+        title = 'Should be flagged';
+        message = 'Should also be flagged';
+      }`,
+      options: [
+        {
+          nonUserFacingPattern: '(a+)+', // Nested quantifier pattern
+        },
+      ],
+      errors: [
+        {
+          message:
+            'Invalid or unsafe nonUserFacingPattern: "(a+)+". Pattern contains disallowed characters. Using default pattern only.',
+        },
+        {
+          message:
+            'Hard-coded string "Should be flagged" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+        {
+          message:
+            'Hard-coded string "Should also be flagged" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+      ],
+    },
+    // ReDoS protection: test pattern with disallowed characters
+    {
+      code: `class DisallowedCharsTest { 
+        title = 'Should be flagged';
+      }`,
+      options: [
+        {
+          nonUserFacingPattern: 'custom\\property', // Contains backslash
+        },
+      ],
+      errors: [
+        {
+          message:
+            'Invalid or unsafe nonUserFacingPattern: "custom\\property". Pattern contains disallowed characters. Using default pattern only.',
+        },
+        {
+          message:
+            'Hard-coded string "Should be flagged" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+      ],
+    },
+    // ReDoS protection: test extremely long pattern
+    {
+      code: `class LongPatternTest { 
+        title = 'Should be flagged';
+      }`,
+      options: [
+        {
+          nonUserFacingPattern: 'a'.repeat(1001), // Pattern longer than 1000 characters
+        },
+      ],
+      errors: [
+        {
+          message:
+            'Invalid or unsafe nonUserFacingPattern: "' +
+            'a'.repeat(1001) +
+            '". Potentially unsafe pattern detected. Using default pattern only.',
+        },
+        {
+          message:
+            'Hard-coded string "Should be flagged" should be replaced with a translation key. Refer to https://www.notion.so/fyleuniverse/i18n-translation-file-structure-1ea2ed8bfcb3803da113d3bfc2774ec1#1ea2ed8bfcb3809a9a0ddc05a548eb49 for more details.',
+        },
+      ],
+    },
   ],
 });

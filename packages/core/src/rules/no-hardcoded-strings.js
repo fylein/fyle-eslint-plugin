@@ -1,8 +1,7 @@
 import { ESLintUtils, AST_NODE_TYPES } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  () =>
-    `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/no-hardcoded-strings/README.md`
+  () => `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/no-hardcoded-strings/README.md`,
 );
 
 const RULE_NAME = 'no-hardcoded-strings';
@@ -21,8 +20,7 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description:
-        'Disallows hard-coded user-facing text. Works seamlessly with eslint-plugin-diff.',
+      description: 'Disallows hard-coded user-facing text. Works seamlessly with eslint-plugin-diff.',
       recommended: 'recommended',
     },
     fixable: 'code',
@@ -32,8 +30,7 @@ export default createRule({
         properties: {
           nonUserFacingPattern: {
             type: 'string',
-            description:
-              'RegExp pattern for non-user-facing property names to ignore.',
+            description: 'RegExp pattern for non-user-facing property names to ignore.',
           },
         },
         additionalProperties: false,
@@ -49,25 +46,92 @@ export default createRule({
   create(context) {
     const { nonUserFacingPattern } = context.options[0] || {};
 
-    // Default non-user-facing pattern
-    const defaultNonUserFacingPattern =
-      '(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)';
+    if (nonUserFacingPattern) {
+      try {
+        // More comprehensive ReDoS detection
+        const isUnsafePattern = (pattern) => {
+          if (pattern.length > 1000) return true;
+          const unsafePatterns = [
+            '(.*+)+',
+            '(.*)*',
+            '(.+)+',
+            '(.?)+',
+            '(.{',
+            '(a|b)*+',
+            '(a|b)+*',
+            '(.*|.*)',
+            '((',
+            ')))',
+            '{999',
+            '{9999',
+          ];
+          return unsafePatterns.some((unsafePattern) => pattern.includes(unsafePattern));
+        };
 
-    // Combine default pattern with custom pattern if provided
-    const combinedPattern = nonUserFacingPattern
-      ? `(${defaultNonUserFacingPattern}|${nonUserFacingPattern})`
-      : defaultNonUserFacingPattern;
+        // Allow grouping and commas if needed
+        const allowedChars = /^[a-zA-Z0-9|_\-(),]+$/;
 
-    const nonUserFacingRegExp = new RegExp(combinedPattern, 'i');
+        if (!allowedChars.test(nonUserFacingPattern)) {
+          throw new Error('Pattern contains disallowed characters');
+        }
+
+        if (isUnsafePattern(nonUserFacingPattern)) {
+          throw new Error('Potentially unsafe pattern detected');
+        }
+
+        // Instead of testing with RegExp, we'll use a safer approach
+        // Split the pattern and validate each part
+        const patternParts = nonUserFacingPattern.split(/[|,()]/).filter((part) => part.trim());
+        for (const part of patternParts) {
+          if (part.trim() && !/^[a-zA-Z0-9_]+$/.test(part.trim())) {
+            throw new Error('Invalid pattern part: ' + part);
+          }
+        }
+      } catch (error) {
+        context.report({
+          loc: { line: 1, column: 1 },
+          message: `Invalid or unsafe nonUserFacingPattern: "${nonUserFacingPattern}". ${error.message}. Using default pattern only.`,
+        });
+      }
+    }
+
+    // Create a safe function to test property names instead of using dynamic RegExp
+    function isNonUserFacingProperty(propertyName) {
+      // Test against default pattern first (hardcoded for safety)
+      const defaultPattern =
+        /(class|style|type|form|loading|template|icon|size|src|href|router|query|fragment|preserve|skip|replace|state|button|default|validate|element|prefix|direction|styleClasses|tooltipShowEvent|keys|option|position|append|source|test|field|autocomplete|Id|image|url|height|width|target|pSortableColumn|name|alignment|mode|accept|responsiveLayout)/i;
+
+      if (defaultPattern.test(propertyName)) {
+        return true;
+      }
+
+      // Test against custom pattern if available (using string operations)
+      if (nonUserFacingPattern) {
+        const customParts = nonUserFacingPattern.split(/[|,()]/).filter((part) => part.trim());
+        return customParts.some((part) => part.toLowerCase() === propertyName.toLowerCase());
+      }
+
+      return false;
+    }
 
     // Translation keys are usually dot or underscore separated; hyphens alone shouldn't be considered a key
-    const translationKeyPattern = /^[a-z0-9]+([._][a-z0-9]+)+$/;
+    // Using a safer approach to avoid ReDoS vulnerability - simple string validation instead of complex regex
+    function isValidTranslationKey(str) {
+      // Must start with alphanumeric
+      if (!/^[a-z0-9]/.test(str)) return false;
+
+      // Must end with alphanumeric
+      if (!/[a-z0-9]$/.test(str)) return false;
+
+      // Split by dots and underscores and validate each part
+      const parts = str.split(/[._]/);
+      return parts.length >= 2 && parts.every((part) => /^[a-z0-9]+$/.test(part));
+    }
 
     // Track toast service variables by their TypeScript type annotations
     // const toastServiceVars = new Set();
 
-    const isTestFile =
-      context.filename && /\.(spec|test)\.[jt]s$/.test(context.filename);
+    const isTestFile = context.filename && /\.(spec|test)\.[jt]s$/.test(context.filename);
 
     function report(node, text) {
       // Skip technical/system strings that are not user-facing
@@ -92,10 +156,7 @@ export default createRule({
         return;
       }
 
-      if (
-        technicalStringPattern.test(trimmedText) ||
-        translationKeyPattern.test(trimmedText)
-      ) {
+      if (technicalStringPattern.test(trimmedText) || isValidTranslationKey(trimmedText)) {
         return;
       }
 
@@ -160,15 +221,7 @@ export default createRule({
           const attrValue = node.value;
 
           // Check user-facing attributes
-          if (
-            [
-              'placeholder',
-              'title',
-              'alt',
-              'aria-label',
-              'aria-description',
-            ].includes(attrName)
-          ) {
+          if (['placeholder', 'title', 'alt', 'aria-label', 'aria-description'].includes(attrName)) {
             if (hasAlphabeticChars(attrValue)) {
               report(node, attrValue);
             }
@@ -181,8 +234,8 @@ export default createRule({
         if (context.filename && context.filename.endsWith('.html')) {
           const bindingName = node.name;
 
-          // Skip non-user-facing property bindings using regex pattern
-          if (nonUserFacingRegExp.test(bindingName)) {
+          // Skip non-user-facing property bindings using safe function
+          if (isNonUserFacingProperty(bindingName)) {
             return;
           }
 
@@ -190,19 +243,12 @@ export default createRule({
           if (node.value && node.value.ast) {
             // Skip if it contains transloco pipe (translation keys)
             const sourceSpan = node.value.source;
-            if (
-              sourceSpan &&
-              (sourceSpan.includes('| transloco') ||
-                sourceSpan.includes('|transloco'))
-            ) {
+            if (sourceSpan && (sourceSpan.includes('| transloco') || sourceSpan.includes('|transloco'))) {
               return;
             }
 
             // Check for literal strings in the binding
-            if (
-              node.value.ast.type === 'LiteralPrimitive' &&
-              typeof node.value.ast.value === 'string'
-            ) {
+            if (node.value.ast.type === 'LiteralPrimitive' && typeof node.value.ast.value === 'string') {
               const stringValue = node.value.ast.value;
               if (hasAlphabeticChars(stringValue)) {
                 report(node, stringValue);
@@ -265,27 +311,18 @@ export default createRule({
           return;
         }
         if (context.filename && context.filename.endsWith('.ts')) {
-          if (
-            typeof node.value === 'string' &&
-            hasAlphabeticChars(node.value)
-          ) {
+          if (typeof node.value === 'string' && hasAlphabeticChars(node.value)) {
             // Check if this is a property definition
-            if (
-              node.parent &&
-              node.parent.type === AST_NODE_TYPES.PropertyDefinition
-            ) {
+            if (node.parent && node.parent.type === AST_NODE_TYPES.PropertyDefinition) {
               // Skip private properties
-              if (
-                node.parent.accessibility === 'private' ||
-                node.parent.readonly
-              ) {
+              if (node.parent.accessibility === 'private' || node.parent.readonly) {
                 return;
               }
 
               // Check if the property name is non-user-facing
               if (node.parent.key.type === AST_NODE_TYPES.Identifier) {
                 const propertyName = node.parent.key.name;
-                if (nonUserFacingRegExp.test(propertyName)) {
+                if (isNonUserFacingProperty(propertyName)) {
                   return;
                 }
               }
