@@ -16,7 +16,7 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 ### Installation
 
 ```bash
-npm install --save-dev fylein/fyle-eslint-plugin#master
+npm install --save-dev @fyle/eslint-plugin@github:fylein/fyle-eslint-plugin#master
 ```
 
 ### Basic Configuration
