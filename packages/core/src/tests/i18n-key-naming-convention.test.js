@@ -29,8 +29,7 @@ ruleTester.run('i18n-key-naming-convention (TypeScript)', rule, {
         const x = 'googleSignIn.unauthorizedAccessHeader';
         this.translocoService.translate(x);
       `,
-      filename:
-        'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
+      filename: 'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
     },
   ],
 
@@ -54,8 +53,7 @@ ruleTester.run('i18n-key-naming-convention (TypeScript)', rule, {
         const x = 'googleSignIn1.unauthorizedAccessHeader';
         this.translocoService.translate(x);
       `,
-      filename:
-        'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
+      filename: 'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
       errors: [
         {
           messageId: 'mismatchedKey',
@@ -188,8 +186,7 @@ ruleTester.run('i18n-key-naming-convention (Templates)', rule, {
         })
         class TestComponent {}
       `,
-      filename:
-        'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.html',
+      filename: 'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.html',
       errors: [
         {
           messageId: 'mismatchedKey',
@@ -242,8 +239,7 @@ ruleTester.run('i18n-key-naming-convention (with ignoredPrefixes)', rule, {
         const x = 'common.button.cancel';
         this.translocoService.translate(x);
       `,
-      filename:
-        'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
+      filename: 'apps/accounts/src/app/auth/google-sign-in/google-sign-in.component.ts',
       options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
     },
     {
@@ -351,119 +347,220 @@ ruleTester.run('i18n-key-naming-convention (with ignoredPrefixes)', rule, {
 });
 
 // --- Template Tests with ignoredPrefixes option ---
-ruleTester.run(
-  'i18n-key-naming-convention (Templates with ignoredPrefixes)',
-  rule,
-  {
-    valid: [
-      {
-        code: `
+ruleTester.run('i18n-key-naming-convention (Templates with ignoredPrefixes)', rule, {
+  valid: [
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "common.button.save" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-      },
-      {
-        code: `
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+    },
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "shared.validation.required" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-      },
-      {
-        code: `
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+    },
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "potentialDuplicatesReviewDialog.title" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-      },
-      {
-        code: `
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+    },
+    {
+      code: `
         @Component({
           template: \`<h1>*transloco="let t; read: 'common.button.save'"</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-      },
-    ],
-    invalid: [
-      {
-        code: `
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+    },
+  ],
+  invalid: [
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "someRandom.key" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-        errors: [
-          {
-            messageId: 'mismatchedKey',
-            data: {
-              key: 'someRandom.key',
-              expectedPrefix: 'potentialDuplicatesReviewDialog',
-            },
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+      errors: [
+        {
+          messageId: 'mismatchedKey',
+          data: {
+            key: 'someRandom.key',
+            expectedPrefix: 'potentialDuplicatesReviewDialog',
           },
-        ],
-      },
-      {
-        code: `
+        },
+      ],
+    },
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "common.button.save" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['shared.', 'global.'] }], // 'common.' not in ignoredPrefixes
-        errors: [
-          {
-            messageId: 'mismatchedKey',
-            data: {
-              key: 'common.button.save',
-              expectedPrefix: 'potentialDuplicatesReviewDialog',
-            },
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['shared.', 'global.'] }], // 'common.' not in ignoredPrefixes
+      errors: [
+        {
+          messageId: 'mismatchedKey',
+          data: {
+            key: 'common.button.save',
+            expectedPrefix: 'potentialDuplicatesReviewDialog',
           },
-        ],
-      },
-      {
-        code: `
+        },
+      ],
+    },
+    {
+      code: `
         @Component({
           template: \`<h1>{{ "potentialDuplicatesReviewDialog.title.long" | transloco }}</h1>\`
         })
         class TestComponent {}
       `,
-        filename:
-          'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
-        options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
-        errors: [
-          {
-            messageId: 'tooManyParts',
-            data: {
-              key: 'potentialDuplicatesReviewDialog.title.long',
-              maxParts: 2,
-              type: 'component',
-              example: 'signIn.warningAccountLockSoon',
-            },
+      filename:
+        'libs/shared/features/feature-potential-duplicates-review-dialog/src/lib/feature-potential-duplicates-review-dialog.component.ts',
+      options: [{ ignoredPrefixes: ['common.', 'shared.'] }],
+      errors: [
+        {
+          messageId: 'tooManyParts',
+          data: {
+            key: 'potentialDuplicatesReviewDialog.title.long',
+            maxParts: 2,
+            type: 'component',
+            example: 'signIn.warningAccountLockSoon',
           },
-        ],
-      },
-    ],
-  }
-);
+        },
+      ],
+    },
+  ],
+});
+
+// --- Tests for multiple prefixes and page files ---
+ruleTester.run('i18n-key-naming-convention (Multiple prefixes and page files)', rule, {
+  valid: [
+    // Test custom file prefixes
+    {
+      code: `this.translate.translate('userProfile.title');`,
+      filename: 'libs/shared/features/admin-user-profile/src/lib/admin-user-profile.component.ts',
+      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+    },
+    {
+      code: `this.translate.translate('dashboard.header');`,
+      filename: 'libs/shared/ui/ui-dashboard/src/lib/ui-dashboard.component.ts',
+      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+    },
+    // Test page files
+    {
+      code: `this.translate.translate('login.title');`,
+      filename: 'apps/accounts/src/app/auth/login/login.page.ts',
+    },
+    {
+      code: `this.translate.translate('dashboard.header');`,
+      filename: 'apps/accounts/src/app/dashboard/dashboard.page.ts',
+    },
+    // Test page files with custom prefixes
+    {
+      code: `this.translate.translate('userProfile.title');`,
+      filename: 'apps/admin/admin-user-profile/admin-user-profile.page.ts',
+      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+    },
+    // Test that number format strings are not flagged as translation keys
+    {
+      code: `
+        @Component({
+          template: \`<span>{{ 'paginator.pageStatus' | transloco: { currentPage: (currentPage | number: '1.0-0'), totalPageCount: (totalPageCount | number: '1.0-0') } }}</span>\`
+        })
+        class TestComponent {}
+      `,
+      filename: 'libs/shared/features/feature-paginator/src/lib/feature-paginator.component.ts',
+    },
+    // Test various number format strings that should not be flagged
+    {
+      code: `
+        @Component({
+          template: \`
+            <span>{{ 'paginator.pageStatus' | transloco: { 
+              currentPage: (currentPage | number: '1.0-0'), 
+              totalPageCount: (totalPageCount | number: '1.0-0'),
+              percentage: (percentage | number: '1.2-2'),
+              currency: (amount | currency: 'USD':true:'1.2-2')
+            } }}</span>
+          \`
+        })
+        class TestComponent {}
+      `,
+      filename: 'libs/shared/features/feature-paginator/src/lib/feature-paginator.component.ts',
+    },
+  ],
+  invalid: [
+    // Test that wrong keys are still flagged
+    {
+      code: `this.translate.translate('wrongKey.title');`,
+      filename: 'libs/shared/features/admin-user-profile/src/lib/admin-user-profile.component.ts',
+      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+      errors: [
+        {
+          messageId: 'mismatchedKey',
+          data: {
+            key: 'wrongKey.title',
+            expectedPrefix: 'userProfile',
+          },
+        },
+      ],
+    },
+    {
+      code: `this.translate.translate('wrongKey.title');`,
+      filename: 'apps/accounts/src/app/auth/login/login.page.ts',
+      errors: [
+        {
+          messageId: 'mismatchedKey',
+          data: {
+            key: 'wrongKey.title',
+            expectedPrefix: 'login',
+          },
+        },
+      ],
+    },
+    // Test that page files follow component rules (max 2 parts)
+    {
+      code: `this.translate.translate('login.title.too.long');`,
+      filename: 'apps/accounts/src/app/auth/login/login.page.ts',
+      errors: [
+        {
+          messageId: 'tooManyParts',
+          data: {
+            key: 'login.title.too.long',
+            maxParts: 2,
+            type: 'component',
+            example: 'signIn.warningAccountLockSoon',
+          },
+        },
+      ],
+    },
+  ],
+});

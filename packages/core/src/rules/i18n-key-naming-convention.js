@@ -2,8 +2,7 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import path from 'path';
 
 const createRule = ESLintUtils.RuleCreator(
-  () =>
-    `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/i18n-key-naming-convention/README.md`
+  () => `https://github.com/fylein/fyle-app/blob/master/custom-eslint-rules/i18n-key-naming-convention/README.md`,
 );
 
 const RULE_NAME = 'i18n-key-naming-convention';
@@ -22,26 +21,27 @@ function stripPrefixes(rawName, suffix, prefixes = ['feature-', 'ui-']) {
   return name.replace(suffix, '');
 }
 
-function getContextInfo(filename) {
+function getContextInfo(filename, filePrefixes) {
   const base = path.basename(filename);
 
   if (base.endsWith('.component.html') || base.endsWith('.component.ts')) {
-    const cleaned = stripPrefixes(
-      base.replace(/\.(html|ts)$/, ''),
-      '.component'
-    );
+    const cleaned = stripPrefixes(base.replace(/\.(html|ts)$/, ''), '.component', filePrefixes);
+    return { prefix: kebabToCamelCase(cleaned), type: 'component' };
+  }
+  if (base.endsWith('.page.ts')) {
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.page', filePrefixes);
     return { prefix: kebabToCamelCase(cleaned), type: 'component' };
   }
   if (base.endsWith('.service.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.service');
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.service', filePrefixes);
     return { prefix: `services.${kebabToCamelCase(cleaned)}`, type: 'service' };
   }
   if (base.endsWith('.pipe.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.pipe');
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.pipe', filePrefixes);
     return { prefix: `pipes.${kebabToCamelCase(cleaned)}`, type: 'pipe' };
   }
   if (base.endsWith('.directive.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.directive');
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.directive', filePrefixes);
     return {
       prefix: `directives.${kebabToCamelCase(cleaned)}`,
       type: 'directive',
@@ -69,10 +69,7 @@ function checkKey(key, contextInfo, context, node, ignoredPrefixes) {
         key,
         minParts: minPartsRequired,
         type,
-        example:
-          minPartsRequired === 2
-            ? 'signIn.warningAccountLockSoon'
-            : 'services.warningAccountLockSoon.example',
+        example: minPartsRequired === 2 ? 'signIn.warningAccountLockSoon' : 'services.warningAccountLockSoon.example',
       },
     });
     return;
@@ -154,14 +151,21 @@ function extractKeysFromTemplate(template) {
     const expr = match[1];
     let keyMatch;
     while ((keyMatch = keyPattern.exec(expr)) !== null) {
-      keys.push(keyMatch[1]);
+      const key = keyMatch[1];
+      // Filter out number format strings like '1.0-0'
+      if (!/^\d+\.\d+-\d+$/.test(key)) {
+        keys.push(key);
+      }
     }
   }
   // structural directive *transloco="... read: 'key'"
-  const structuralPattern =
-    /\bread\s*:\s*['"]([^\s'".]+[\w.-]*\.[^\s'".]+)['"]/g;
+  const structuralPattern = /\bread\s*:\s*['"]([^\s'".]+[\w.-]*\.[^\s'".]+)['"]/g;
   while ((match = structuralPattern.exec(template)) !== null) {
-    keys.push(match[1]);
+    const key = match[1];
+    // Filter out number format strings like '1.0-0'
+    if (!/^\d+\.\d+-\d+$/.test(key)) {
+      keys.push(key);
+    }
   }
   return keys;
 }
@@ -174,7 +178,11 @@ function extractKeysFromExpression(exprSource) {
   const keys = [];
   let m;
   while ((m = keyPattern.exec(exprSource)) !== null) {
-    keys.push(m[1]);
+    const key = m[1];
+    // Filter out number format strings like '1.0-0'
+    if (!/^\d+\.\d+-\d+$/.test(key)) {
+      keys.push(key);
+    }
   }
   return keys;
 }
@@ -184,8 +192,7 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description:
-        'Enforce i18n key naming convention based on file type and name (TypeScript and HTML)',
+      description: 'Enforce i18n key naming convention based on file type and name (TypeScript and HTML)',
       category: 'Best Practices',
     },
     messages: {
@@ -205,22 +212,30 @@ export default createRule({
             items: {
               type: 'string',
             },
-            description:
-              'Array of key prefixes to ignore (e.g., ["common.", "shared."])',
+            description: 'Array of key prefixes to ignore (e.g., ["common.", "shared."])',
+          },
+          filePrefixes: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Array of file name prefixes to strip (e.g., ["feature-", "ui-", "admin-"])',
+            default: ['feature-', 'ui-'],
           },
         },
         additionalProperties: false,
       },
     ],
   },
-  defaultOptions: [{ ignoredPrefixes: [] }],
+  defaultOptions: [{ ignoredPrefixes: [], filePrefixes: ['feature-', 'ui-'] }],
   create(context) {
     const filename = context.filename ?? '';
-    const contextInfo = getContextInfo(filename);
-    if (!contextInfo) return {};
-
     const options = context.options[0] || {};
     const ignoredPrefixes = options.ignoredPrefixes || [];
+    const filePrefixes = options.filePrefixes || ['feature-', 'ui-'];
+
+    const contextInfo = getContextInfo(filename, filePrefixes);
+    if (!contextInfo) return {};
 
     const variableTracker = new Map();
 
@@ -272,21 +287,16 @@ export default createRule({
         if (
           node.key.type === 'Identifier' &&
           node.key.name === 'template' &&
-          (node.value.type === 'Literal' ||
-            node.value.type === 'TemplateLiteral')
+          (node.value.type === 'Literal' || node.value.type === 'TemplateLiteral')
         ) {
           let templateContent = '';
           if (node.value.type === 'Literal') {
             templateContent = String(node.value.value);
           } else {
-            templateContent = node.value.quasis
-              .map((q) => q.value.raw)
-              .join('');
+            templateContent = node.value.quasis.map((q) => q.value.raw).join('');
           }
           const keys = extractKeysFromTemplate(templateContent);
-          keys.forEach((k) =>
-            checkKey(k, contextInfo, context, node.value, ignoredPrefixes)
-          );
+          keys.forEach((k) => checkKey(k, contextInfo, context, node.value, ignoredPrefixes));
         }
       },
       CallExpression(node) {
@@ -308,25 +318,13 @@ export default createRule({
           if (variableTracker.has(arg.name)) {
             const literals = variableTracker.get(arg.name);
             for (const literalNode of literals) {
-              checkKey(
-                literalNode.value,
-                contextInfo,
-                context,
-                literalNode,
-                ignoredPrefixes
-              );
+              checkKey(literalNode.value, contextInfo, context, literalNode, ignoredPrefixes);
             }
           }
         } else if (arg.type === 'ConditionalExpression') {
           const literals = findLiteralsInTsExpression(arg);
           for (const literalNode of literals) {
-            checkKey(
-              literalNode.value,
-              contextInfo,
-              context,
-              literalNode,
-              ignoredPrefixes
-            );
+            checkKey(literalNode.value, contextInfo, context, literalNode, ignoredPrefixes);
           }
         }
       },
@@ -339,40 +337,28 @@ export default createRule({
         if (!node.value.includes('| transloco')) return;
 
         const keys = extractKeysFromExpression(node.value);
-        keys.forEach((k) =>
-          checkKey(k, contextInfo, context, node, ignoredPrefixes)
-        );
+        keys.forEach((k) => checkKey(k, contextInfo, context, node, ignoredPrefixes));
       },
 
       TextAttribute(node) {
         // structural directive like *transloco="... read: 'key'"
         if (node.name !== 'transloco' && !/transloco/i.test(node.value)) return;
         const keys = extractKeysFromExpression(node.value);
-        keys.forEach((k) =>
-          checkKey(k, contextInfo, context, node, ignoredPrefixes)
-        );
+        keys.forEach((k) => checkKey(k, contextInfo, context, node, ignoredPrefixes));
       },
 
       BoundAttribute(node) {
         if (!node.value || !node.value.source) return;
         if (!node.value.source.includes('transloco')) return;
         const keys = extractKeysFromExpression(node.value.source);
-        keys.forEach((k) =>
-          checkKey(k, contextInfo, context, node, ignoredPrefixes)
-        );
+        keys.forEach((k) => checkKey(k, contextInfo, context, node, ignoredPrefixes));
       },
     };
 
     ngTemplateHandlers.BoundText = function (node) {
-      if (
-        node.value &&
-        node.value.source &&
-        node.value.source.includes('transloco')
-      ) {
+      if (node.value && node.value.source && node.value.source.includes('transloco')) {
         const keys = extractKeysFromExpression(node.value.source);
-        keys.forEach((k) =>
-          checkKey(k, contextInfo, context, node, ignoredPrefixes)
-        );
+        keys.forEach((k) => checkKey(k, contextInfo, context, node, ignoredPrefixes));
       }
     };
 
