@@ -221,19 +221,19 @@ export default createRule({
             },
             description:
               'Array of file name prefixes to strip before generating translation key prefixes (e.g., ["feature-", "ui-", "admin-"])',
-            default: ['feature-', 'ui-'],
+            default: ['feature-', 'ui-', 'util-'],
           },
         },
         additionalProperties: false,
       },
     ],
   },
-  defaultOptions: [{ ignoredPrefixes: [], stripFilePrefixes: ['feature-', 'ui-'] }],
+  defaultOptions: [{ ignoredPrefixes: [], stripFilePrefixes: ['feature-', 'ui-', 'util-'] }],
   create(context) {
     const filename = context.filename ?? '';
     const options = context.options[0] || {};
     const ignoredPrefixes = options.ignoredPrefixes || [];
-    const stripFilePrefixes = options.stripFilePrefixes || ['feature-', 'ui-'];
+    const stripFilePrefixes = options.stripFilePrefixes || ['feature-', 'ui-', 'util-'];
 
     const contextInfo = getContextInfo(filename, stripFilePrefixes);
     if (!contextInfo) return {};
