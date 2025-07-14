@@ -21,27 +21,27 @@ function stripPrefixes(rawName, suffix, prefixes = ['feature-', 'ui-']) {
   return name.replace(suffix, '');
 }
 
-function getContextInfo(filename, filePrefixes) {
+function getContextInfo(filename, stripFilePrefixes) {
   const base = path.basename(filename);
 
   if (base.endsWith('.component.html') || base.endsWith('.component.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.(html|ts)$/, ''), '.component', filePrefixes);
+    const cleaned = stripPrefixes(base.replace(/\.(html|ts)$/, ''), '.component', stripFilePrefixes);
     return { prefix: kebabToCamelCase(cleaned), type: 'component' };
   }
   if (base.endsWith('.page.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.page', filePrefixes);
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.page', stripFilePrefixes);
     return { prefix: kebabToCamelCase(cleaned), type: 'component' };
   }
   if (base.endsWith('.service.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.service', filePrefixes);
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.service', stripFilePrefixes);
     return { prefix: `services.${kebabToCamelCase(cleaned)}`, type: 'service' };
   }
   if (base.endsWith('.pipe.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.pipe', filePrefixes);
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.pipe', stripFilePrefixes);
     return { prefix: `pipes.${kebabToCamelCase(cleaned)}`, type: 'pipe' };
   }
   if (base.endsWith('.directive.ts')) {
-    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.directive', filePrefixes);
+    const cleaned = stripPrefixes(base.replace(/\.ts$/, ''), '.directive', stripFilePrefixes);
     return {
       prefix: `directives.${kebabToCamelCase(cleaned)}`,
       type: 'directive',
@@ -214,12 +214,13 @@ export default createRule({
             },
             description: 'Array of key prefixes to ignore (e.g., ["common.", "shared."])',
           },
-          filePrefixes: {
+          stripFilePrefixes: {
             type: 'array',
             items: {
               type: 'string',
             },
-            description: 'Array of file name prefixes to strip (e.g., ["feature-", "ui-", "admin-"])',
+            description:
+              'Array of file name prefixes to strip before generating translation key prefixes (e.g., ["feature-", "ui-", "admin-"])',
             default: ['feature-', 'ui-'],
           },
         },
@@ -227,14 +228,14 @@ export default createRule({
       },
     ],
   },
-  defaultOptions: [{ ignoredPrefixes: [], filePrefixes: ['feature-', 'ui-'] }],
+  defaultOptions: [{ ignoredPrefixes: [], stripFilePrefixes: ['feature-', 'ui-'] }],
   create(context) {
     const filename = context.filename ?? '';
     const options = context.options[0] || {};
     const ignoredPrefixes = options.ignoredPrefixes || [];
-    const filePrefixes = options.filePrefixes || ['feature-', 'ui-'];
+    const stripFilePrefixes = options.stripFilePrefixes || ['feature-', 'ui-'];
 
-    const contextInfo = getContextInfo(filename, filePrefixes);
+    const contextInfo = getContextInfo(filename, stripFilePrefixes);
     if (!contextInfo) return {};
 
     const variableTracker = new Map();

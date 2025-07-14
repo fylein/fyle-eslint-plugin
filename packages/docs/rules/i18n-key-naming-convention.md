@@ -100,6 +100,54 @@ this.translate.instant('signIn.errorInvalidPassword');
 this.translate.instant('auth.errorInvalidPassword');
 ```
 
+### With file prefix stripping
+
+```js
+// eslint.config.js
+export default [
+  {
+    rules: {
+      'fyle-core/i18n-key-naming-convention': [
+        'error',
+        {
+          stripFilePrefixes: ['feature-', 'ui-', 'admin-'],
+        },
+      ],
+    },
+  },
+];
+```
+
+```ts
+// ✅ GOOD – feature-user-profile.component.ts → userProfile.title
+this.translate.instant('userProfile.title');
+
+// ✅ GOOD – ui-dashboard.component.ts → dashboard.header
+this.translate.instant('dashboard.header');
+
+// ✅ GOOD – admin-user-settings.page.ts → userSettings.config
+this.translate.instant('userSettings.config');
+```
+
+### With both options
+
+```js
+// eslint.config.js
+export default [
+  {
+    rules: {
+      'fyle-core/i18n-key-naming-convention': [
+        'error',
+        {
+          ignoredPrefixes: ['common.', 'shared.', 'global.'],
+          stripFilePrefixes: ['feature-', 'ui-', 'admin-'],
+        },
+      ],
+    },
+  },
+];
+```
+
 ---
 
 ## 4 Configuration
@@ -129,9 +177,10 @@ export default [
 
 ### Options
 
-| Option            | Type       | Default | Description                                                                                      |
-| ----------------- | ---------- | ------- | ------------------------------------------------------------------------------------------------ |
-| `ignoredPrefixes` | `string[]` | `[]`    | Array of key prefixes to ignore. Keys starting with any of these prefixes will not be validated. |
+| Option              | Type       | Default               | Description                                                                                      |
+| ------------------- | ---------- | --------------------- | ------------------------------------------------------------------------------------------------ |
+| `ignoredPrefixes`   | `string[]` | `[]`                  | Array of key prefixes to ignore. Keys starting with any of these prefixes will not be validated. |
+| `stripFilePrefixes` | `string[]` | `['feature-', 'ui-']` | Array of file name prefixes to strip before generating translation key prefixes.                 |
 
 ---
 

@@ -467,12 +467,12 @@ ruleTester.run('i18n-key-naming-convention (Multiple prefixes and page files)', 
     {
       code: `this.translate.translate('userProfile.title');`,
       filename: 'libs/shared/features/admin-user-profile/src/lib/admin-user-profile.component.ts',
-      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+      options: [{ stripFilePrefixes: ['feature-', 'ui-', 'admin-'] }],
     },
     {
       code: `this.translate.translate('dashboard.header');`,
       filename: 'libs/shared/ui/ui-dashboard/src/lib/ui-dashboard.component.ts',
-      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+      options: [{ stripFilePrefixes: ['feature-', 'ui-', 'admin-'] }],
     },
     // Test page files
     {
@@ -487,7 +487,7 @@ ruleTester.run('i18n-key-naming-convention (Multiple prefixes and page files)', 
     {
       code: `this.translate.translate('userProfile.title');`,
       filename: 'apps/admin/admin-user-profile/admin-user-profile.page.ts',
-      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+      options: [{ stripFilePrefixes: ['feature-', 'ui-', 'admin-'] }],
     },
     // Test that number format strings are not flagged as translation keys
     {
@@ -522,7 +522,7 @@ ruleTester.run('i18n-key-naming-convention (Multiple prefixes and page files)', 
     {
       code: `this.translate.translate('wrongKey.title');`,
       filename: 'libs/shared/features/admin-user-profile/src/lib/admin-user-profile.component.ts',
-      options: [{ filePrefixes: ['feature-', 'ui-', 'admin-'] }],
+      options: [{ stripFilePrefixes: ['feature-', 'ui-', 'admin-'] }],
       errors: [
         {
           messageId: 'mismatchedKey',
