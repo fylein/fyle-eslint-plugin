@@ -16,10 +16,13 @@ Install the plugin from GitHub:
 
 ```bash
 # Install from master branch
-npm install --save-dev fylein/fyle-eslint-plugin#master
+npm install --save-dev @fyle/eslint-plugin@github:fylein/fyle-eslint-plugin#master
 
 # Or install from a specific tag/version
-npm install --save-dev fylein/fyle-eslint-plugin#v1.0.0
+npm install --save-dev @fyle/eslint-plugin@github:fylein/fyle-eslint-plugin#v1.0.2
+
+# For developers: install from a feature branch (e.g., testing latest features)
+npm install --save-dev @fyle/eslint-plugin@github:fylein/fyle-eslint-plugin#feature/multiple-prefixes-and-page-files
 ```
 
 ## Usage

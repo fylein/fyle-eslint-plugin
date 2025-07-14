@@ -1,6 +1,6 @@
 {
   "name": "@fyle/eslint-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Core ESLint rules for Angular projects with i18n best practices",
   "main": "src/index.js",
   "type": "module",
