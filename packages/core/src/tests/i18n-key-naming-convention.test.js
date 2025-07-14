@@ -116,7 +116,7 @@ ruleTester.run('i18n-key-naming-convention (TypeScript)', rule, {
           messageId: 'mismatchedKey',
           data: {
             key: 'services.utilExpensePolic12y.monthJanuary',
-            expectedPrefix: 'services.utilExpensePolicy',
+            expectedPrefix: 'services.expensePolicy',
           },
         },
       ],
@@ -493,7 +493,7 @@ ruleTester.run('i18n-key-naming-convention (Multiple prefixes and page files)', 
     {
       code: `
         @Component({
-          template: \`<span>{{ 'paginator.pageStatus' | transloco: { currentPage: (currentPage | number: '1.0-0'), totalPageCount: (totalPageCount | number: '1.0-0') } }}</span>\`
+          template: \`<span>{{ 'paginator.pageStatus' | transloco: { currentPage: (currentPage | number: 'obj.key'), totalPageCount: (totalPageCount | number: '1.0-0') } }}</span>\`
         })
         class TestComponent {}
       `,
