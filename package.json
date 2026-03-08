@@ -21,6 +21,7 @@
     "pre-commit": "lint-staged"
   },
   "devDependencies": {
+    "@angular-eslint/utils": "^20.1.1",
     "@angular-eslint/template-parser": "^20.1.1",
     "@babel/core": "^7.28.0",
     "@babel/eslint-parser": "^7.28.0",
