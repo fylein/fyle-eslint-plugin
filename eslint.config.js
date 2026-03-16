@@ -17,6 +17,14 @@ export default [
     },
   },
   {
+    files: ['**/*.test.js'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+      },
+    },
+  },
+  {
     ignores: ['node_modules/', '.husky/', 'dist/'],
   },
-]; 
+];

@@ -27,7 +27,8 @@
     "eslint": ">=9.0.0",
     "@angular-eslint/utils": ">=20.0.0",
     "@angular/core": "^20.3.15",
-    "@angular/common": "^20.3.15"
+    "@angular/common": "^20.3.15",
+    "typescript": ">=5.0.0"
   },
   "keywords": [
     "eslint",
