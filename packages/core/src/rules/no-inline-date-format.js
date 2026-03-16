@@ -7,6 +7,16 @@ const createRule = ESLintUtils.RuleCreator(
 
 const RULE_NAME = 'no-inline-date-format';
 
+function normalizeSpanIndex(indexLike) {
+  if (typeof indexLike === 'number') {
+    return indexLike;
+  }
+  if (indexLike && typeof indexLike.offset === 'number') {
+    return indexLike.offset;
+  }
+  return null;
+}
+
 export default createRule({
   name: RULE_NAME,
   meta: {
@@ -26,38 +36,29 @@ export default createRule({
     angularEslintUtils.ensureTemplateParser(context);
 
     return {
-      Program() {
-        const sourceCode = context.getSourceCode();
-        const text = sourceCode.text;
-
-        // Rough pattern:
-        //   | date:'MMM dd, yyyy'
-        //   |date : 'h:mm a'
-        // Capture the quoted literal as group 1 so we can report precisely on it.
-        const regex = /\|\s*date\s*:\s*('([^']*)')/g;
-        let match;
-
-        while ((match = regex.exec(text)) !== null) {
-          const fullMatch = match[0];
-          const literalWithQuotes = match[1];
-
-          const relativeIndex = fullMatch.indexOf(literalWithQuotes);
-          if (relativeIndex === -1) {
-            continue;
-          }
-
-          const absoluteIndex = match.index + relativeIndex;
-          const startLoc = sourceCode.getLocFromIndex(absoluteIndex);
-          const endLoc = sourceCode.getLocFromIndex(absoluteIndex + literalWithQuotes.length);
-
-          context.report({
-            loc: {
-              start: startLoc,
-              end: endLoc,
-            },
-            messageId: 'noInlineDateFormatTemplate',
-          });
+      'BindingPipe[name="date"]'(node) {
+        const firstArg = node.args?.[0];
+        if (!firstArg || typeof firstArg.value !== 'string') {
+          return;
         }
+
+        const sourceCode = context.getSourceCode();
+        const span = firstArg.sourceSpan ?? null;
+        const start = normalizeSpanIndex(span?.start);
+        const end = normalizeSpanIndex(span?.end);
+
+        if (start === null || end === null) {
+          context.report({ node, messageId: 'noInlineDateFormatTemplate' });
+          return;
+        }
+
+        context.report({
+          loc: {
+            start: sourceCode.getLocFromIndex(start),
+            end: sourceCode.getLocFromIndex(end),
+          },
+          messageId: 'noInlineDateFormatTemplate',
+        });
       },
     };
   },
