@@ -84,5 +84,20 @@ ruleTester.run('no-mutate-format-tokens', rule, {
       `,
       errors: [{ messageId: 'noMutateFormatTokens' }],
     },
+    {
+      code: `
+        import { inject } from '@angular/core';
+        import { FORMAT_PREFERENCES } from '@fyle/format-preferences-token';
+
+        class Example {
+          private formatPreferences = inject(FORMAT_PREFERENCES);
+
+          updateSeparators() {
+            this.formatPreferences.currencyFormat.thousandSeparator = ',';
+          }
+        }
+      `,
+      errors: [{ messageId: 'noMutateFormatTokens' }],
+    },
   ],
 });
