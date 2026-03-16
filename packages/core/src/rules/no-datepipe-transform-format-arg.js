@@ -8,6 +8,15 @@ const createRule = ESLintUtils.RuleCreator(
 );
 
 function isAngularCommonDatePipeType(type) {
+  if (!type) {
+    return false;
+  }
+
+  if (type.isUnion?.() || type.isIntersection?.()) {
+    const types = type.types ?? [];
+    return types.some((t) => isAngularCommonDatePipeType(t));
+  }
+
   const symbol = type?.getSymbol?.() ?? type?.aliasSymbol ?? null;
   if (!symbol || symbol.getName() !== 'DatePipe') {
     return false;
@@ -21,7 +30,7 @@ function isAngularCommonDatePipeType(type) {
 
   return decls.some((d) => {
     const fileName = d.getSourceFile?.().fileName || '';
-    return fileName.includes('node_modules/@angular/common');
+    return fileName.includes('@angular/common');
   });
 }
 
