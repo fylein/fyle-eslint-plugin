@@ -1,10 +1,7 @@
-import { RuleTester } from 'eslint';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 import { afterAll, describe, it } from '@jest/globals';
 import rule from '../rules/no-angular-currency-pipe.js';
-
-// Jest runs these tests under CJS transform, so `require` is available here.
-// eslint-disable-next-line no-undef
-const angularParser = require('@angular-eslint/template-parser');
+import * as angularParser from '@angular-eslint/template-parser';
 
 RuleTester.afterAll = afterAll;
 RuleTester.describe = describe;
@@ -14,6 +11,9 @@ const ruleTester = new RuleTester({
   languageOptions: {
     parser: angularParser,
     parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      createDefaultProgram: true,
       // RuleTester doesn't reliably pass `filename` as `filePath` to parsers.
       // `@angular-eslint/template-parser` needs `filePath` to correctly parse HTML templates.
       filePath: 'example.component.html',
