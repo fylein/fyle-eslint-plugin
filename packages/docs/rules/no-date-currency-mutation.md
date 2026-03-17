@@ -1,4 +1,4 @@
-# Custom ESLint Rule: no-mutate-date-currency-format-tokens
+# Custom ESLint Rule: no-date-currency-mutation
 
 Prevent mutating org-level date/currency formatting tokens:
 
@@ -39,7 +39,7 @@ export default [
       '@fyle': fyleCore,
     },
     rules: {
-      '@fyle/no-mutate-date-currency-format-tokens': 'error',
+      '@fyle/no-date-currency-mutation': 'error',
     },
   },
 ];
