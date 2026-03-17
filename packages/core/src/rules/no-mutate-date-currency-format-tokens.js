@@ -1,10 +1,11 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/no-mutate-format-tokens.md',
+  () =>
+    'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/no-mutate-date-currency-format-tokens.md',
 );
 
-const RULE_NAME = 'no-mutate-format-tokens';
+const RULE_NAME = 'no-mutate-date-currency-format-tokens';
 
 export default createRule({
   name: RULE_NAME,

@@ -1,6 +1,6 @@
-# Custom ESLint Rule: no-mutate-format-tokens
+# Custom ESLint Rule: no-mutate-date-currency-format-tokens
 
-Prevent mutating org-level formatting tokens:
+Prevent mutating org-level date/currency formatting tokens:
 
 - `FORMAT_PREFERENCES` (from `@fyle/format-preferences-token`)
 - `DATE_PIPE_DEFAULT_OPTIONS` (from `@angular/common`)
@@ -39,7 +39,7 @@ export default [
       '@fyle': fyleCore,
     },
     rules: {
-      '@fyle/no-mutate-format-tokens': 'error',
+      '@fyle/no-mutate-date-currency-format-tokens': 'error',
     },
   },
 ];
