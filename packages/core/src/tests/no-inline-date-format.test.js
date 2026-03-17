@@ -1,10 +1,7 @@
 import { RuleTester } from 'eslint';
 import { afterAll, describe, it } from '@jest/globals';
 import rule from '../rules/no-inline-date-format.js';
-
-// Jest runs these tests under CJS transform, so `require` is available here.
-// eslint-disable-next-line no-undef
-const angularParser = require('@angular-eslint/template-parser');
+import * as angularParser from '@angular-eslint/template-parser';
 
 RuleTester.afterAll = afterAll;
 RuleTester.describe = describe;

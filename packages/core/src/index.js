@@ -3,7 +3,7 @@ import noAngularCurrencyPipe from './rules/no-angular-currency-pipe.js';
 import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-arg.js';
 import noInlineDateFormat from './rules/no-inline-date-format.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
-import noMutateDisplayFormatTokens from './rules/no-mutate-format-tokens.js';
+import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
 
 const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
@@ -11,7 +11,7 @@ const rules = {
   'no-datepipe-transform-format-arg': noDatepipeTransformFormatArg,
   'no-inline-date-format': noInlineDateFormat,
   'no-hardcoded-strings': noHardcodedStrings,
-  'no-mutate-display-format-tokens': noMutateDisplayFormatTokens,
+  'no-date-currency-mutation': noDateCurrencyMutation,
 };
 
 const configs = {

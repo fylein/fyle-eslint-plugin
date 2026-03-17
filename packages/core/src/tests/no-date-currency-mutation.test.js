@@ -1,6 +1,6 @@
 import { RuleTester } from '@typescript-eslint/rule-tester';
 import tsParser from '@typescript-eslint/parser';
-import rule from '../rules/no-mutate-format-tokens.js';
+import rule from '../rules/no-date-currency-mutation.js';
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -12,7 +12,7 @@ const ruleTester = new RuleTester({
   },
 });
 
-ruleTester.run('no-mutate-format-tokens', rule, {
+ruleTester.run('no-date-currency-mutation', rule, {
   valid: [
     {
       code: `
