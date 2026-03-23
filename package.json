@@ -23,8 +23,8 @@
   "devDependencies": {
     "@angular-eslint/utils": "^20.1.1",
     "@angular-eslint/template-parser": "^20.1.1",
-    "@angular/common": "^20.3.15",
-    "@angular/core": "^20.3.15",
+    "@angular/common": "^20.3.17",
+    "@angular/core": "^20.3.17",
     "@babel/core": "^7.28.0",
     "@babel/eslint-parser": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
