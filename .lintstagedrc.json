@@ -2,5 +2,5 @@
   "*.js": ["eslint --fix", "prettier --write"],
   "*.json": ["prettier --write"],
   "*.md": ["prettier --write"],
-  "**/*.test.js": ["npm test -- --findRelatedTests"]
+  "**/*.test.js": ["pnpm test -- --findRelatedTests"]
 }
