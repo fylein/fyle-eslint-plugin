@@ -33,3 +33,7 @@ logs
 
 # Optional eslint cache
 .eslintcache 
+
+# pnpm cache
+.pnpm-store
+package-lock.json
