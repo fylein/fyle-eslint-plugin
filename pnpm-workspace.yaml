@@ -1,6 +1,14 @@
 packages:
   - "packages/*"
 
+# Security: transitive dependency pins (CVE-2026-33532 yaml, CVE-2026-33671/33672 picomatch).
+# https://pnpm.io/settings#overrides
+overrides:
+  yaml: "2.8.3"
+  "micromatch>picomatch": "2.3.2"
+  "anymatch>picomatch": "2.3.2"
+  "jest-util@29>picomatch": "2.3.2"
+  "jest-util@30>picomatch": "4.0.4"
 
 # 24 hours (1440 minutes); delay before newly published versions may be installed.
 minimumReleaseAge: 1440
