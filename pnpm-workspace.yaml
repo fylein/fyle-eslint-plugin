@@ -18,6 +18,9 @@ verifyDepsBeforeRun: error
 
 trustPolicy: no-downgrade
 
+trustPolicyExclude:
+  - semver@6.3.1
+
 # https://pnpm.io/settings#blockexoticsubdeps
 blockExoticSubdeps: true
 
