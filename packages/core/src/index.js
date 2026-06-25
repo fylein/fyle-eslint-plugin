@@ -4,6 +4,8 @@ import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-a
 import noInlineDateFormat from './rules/no-inline-date-format.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
+import requireTestAssigneeComment from './rules/require-test-assignee-comment.js';
+import requireDateDayTwoDigits from './rules/require-date-day-two-digits.js';
 
 const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
@@ -12,6 +14,8 @@ const rules = {
   'no-inline-date-format': noInlineDateFormat,
   'no-hardcoded-strings': noHardcodedStrings,
   'no-date-currency-mutation': noDateCurrencyMutation,
+  'require-test-assignee-comment': requireTestAssigneeComment,
+  'require-date-day-two-digits': requireDateDayTwoDigits,
 };
 
 const configs = {
