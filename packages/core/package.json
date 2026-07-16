@@ -26,8 +26,8 @@
   "peerDependencies": {
     "eslint": ">=9.0.0",
     "@angular-eslint/utils": ">=21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/common": "^21.0.0",
+    "@angular/core": "^21.2.18",
+    "@angular/common": "^21.2.18",
     "typescript": ">=5.0.0"
   },
   "keywords": [
