@@ -6,12 +6,13 @@ packages:
 overrides:
   yaml: "2.8.3"
   "js-yaml@<3.15.0": "3.15.0"
-  "js-yaml@>=4.0.0 <=4.1.1": "4.2.0"
+  "js-yaml@>=4.0.0 <4.3.0": "4.3.0"
   "micromatch>picomatch": "2.3.2"
   "anymatch>picomatch": "2.3.2"
   "jest-util@29>picomatch": "2.3.2"
   "jest-util@30>picomatch": "4.0.4"
-  "brace-expansion@>=5.0.0 <5.0.6": "5.0.6"
+  "brace-expansion@>=1.0.0 <1.1.16": "1.1.16"
+  "brace-expansion@>=5.0.0 <5.0.7": "5.0.7"
 
 # 24 hours (1440 minutes); delay before newly published versions may be installed.
 minimumReleaseAge: 1440
