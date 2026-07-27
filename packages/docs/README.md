@@ -10,6 +10,7 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 | ---------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | `i18n-key-naming-convention` | Enforces consistent naming conventions for i18n translation keys based on file location and type | [View Documentation](./rules/i18n-key-naming-convention.md) |
 | `no-hardcoded-strings`       | Detects hardcoded user-facing strings in Angular applications and enforces i18n best practices   | [View Documentation](./rules/no-hardcoded-strings.md)       |
+| `enforce-fixture-setup`      | Requires E2E fixtures and prevents straightforward fixture-backed runtime setup                  | [View Documentation](./rules/enforce-fixture-setup.md)      |
 
 ## Quick Start
 

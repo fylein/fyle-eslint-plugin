@@ -1,0 +1,3 @@
+employees:
+  - full_name: John Owner
+    roles: [OWNER, ADMIN]

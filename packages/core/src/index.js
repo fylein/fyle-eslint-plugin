@@ -4,6 +4,7 @@ import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-a
 import noInlineDateFormat from './rules/no-inline-date-format.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
+import enforceFixtureSetup from './rules/enforce-fixture-setup.js';
 
 const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
@@ -12,6 +13,7 @@ const rules = {
   'no-inline-date-format': noInlineDateFormat,
   'no-hardcoded-strings': noHardcodedStrings,
   'no-date-currency-mutation': noDateCurrencyMutation,
+  'enforce-fixture-setup': enforceFixtureSetup,
 };
 
 const configs = {
