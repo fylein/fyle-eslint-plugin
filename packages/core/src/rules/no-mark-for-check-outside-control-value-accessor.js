@@ -4,7 +4,7 @@ const RULE_NAME = 'no-mark-for-check-outside-control-value-accessor';
 
 const createRule = ESLintUtils.RuleCreator(
   () =>
-    'https://github.com/fylein/fyle-eslint-plugin/blob/master/packages/docs/rules/no-mark-for-check-outside-control-value-accessor.md',
+    'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/no-mark-for-check-outside-control-value-accessor.md',
 );
 
 function getImportedName(specifier) {
