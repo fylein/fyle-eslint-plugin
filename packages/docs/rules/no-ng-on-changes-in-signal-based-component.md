@@ -1,6 +1,6 @@
 # Custom ESLint Rule: no-ng-on-changes-in-signal-based-component
 
-Disallow `ngOnChanges()` in Angular components that have been migrated to signal-based inputs.
+Disallow `ngOnChanges()` in signal-based Angular components.
 
 ## Why
 
@@ -42,7 +42,7 @@ Use `computed()` instead when the value is purely derived from inputs.
 
 ## Usage
 
-Enable this rule only for components that have completed the signal-input migration:
+Enable this rule only for components that have completed the signal-based migration:
 
 ```js
 import fyleCore from '@fyle/eslint-plugin';

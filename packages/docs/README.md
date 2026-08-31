@@ -14,7 +14,7 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 | `no-datepipe-transform-format-arg`           | Disallows custom format arguments passed to `DatePipe.transform()`                               | [View Documentation](./rules/no-datepipe-transform-format-arg.md)           |
 | `no-hardcoded-strings`                       | Detects hardcoded user-facing strings in Angular applications and enforces i18n best practices   | [View Documentation](./rules/no-hardcoded-strings.md)                       |
 | `no-inline-date-format`                      | Disallows inline date-format strings in Angular templates                                        | [View Documentation](./rules/no-inline-date-format.md)                      |
-| `no-ng-on-changes-in-signal-based-component` | Disallows `ngOnChanges()` in components migrated to signal-based inputs                          | [View Documentation](./rules/no-ng-on-changes-in-signal-based-component.md) |
+| `no-ng-on-changes-in-signal-based-component` | Disallows `ngOnChanges()` in signal-based components                                             | [View Documentation](./rules/no-ng-on-changes-in-signal-based-component.md) |
 
 ## Quick Start
 
