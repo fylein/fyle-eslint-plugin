@@ -6,10 +6,15 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 
 ### Core Package (`fyle-eslint-plugin`)
 
-| Rule                         | Description                                                                                      | Documentation                                               |
-| ---------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| `i18n-key-naming-convention` | Enforces consistent naming conventions for i18n translation keys based on file location and type | [View Documentation](./rules/i18n-key-naming-convention.md) |
-| `no-hardcoded-strings`       | Detects hardcoded user-facing strings in Angular applications and enforces i18n best practices   | [View Documentation](./rules/no-hardcoded-strings.md)       |
+| Rule                                         | Description                                                                                      | Documentation                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `i18n-key-naming-convention`                 | Enforces consistent naming conventions for i18n translation keys based on file location and type | [View Documentation](./rules/i18n-key-naming-convention.md)                 |
+| `no-angular-currency-pipe`                   | Disallows Angular's built-in currency pipe                                                       | [View Documentation](./rules/no-angular-currency-pipe.md)                   |
+| `no-date-currency-mutation`                  | Prevents mutation of centrally managed date and currency formatting tokens                       | [View Documentation](./rules/no-date-currency-mutation.md)                  |
+| `no-datepipe-transform-format-arg`           | Disallows custom format arguments passed to `DatePipe.transform()`                               | [View Documentation](./rules/no-datepipe-transform-format-arg.md)           |
+| `no-hardcoded-strings`                       | Detects hardcoded user-facing strings in Angular applications and enforces i18n best practices   | [View Documentation](./rules/no-hardcoded-strings.md)                       |
+| `no-inline-date-format`                      | Disallows inline date-format strings in Angular templates                                        | [View Documentation](./rules/no-inline-date-format.md)                      |
+| `no-ng-on-changes-in-signal-based-component` | Disallows `ngOnChanges()` in signal-based components                                             | [View Documentation](./rules/no-ng-on-changes-in-signal-based-component.md) |
 
 ## Quick Start
 

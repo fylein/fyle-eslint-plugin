@@ -4,6 +4,7 @@ import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-a
 import noInlineDateFormat from './rules/no-inline-date-format.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
+import noNgOnChangesInSignalBasedComponent from './rules/no-ng-on-changes-in-signal-based-component.js';
 
 const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
@@ -12,6 +13,7 @@ const rules = {
   'no-inline-date-format': noInlineDateFormat,
   'no-hardcoded-strings': noHardcodedStrings,
   'no-date-currency-mutation': noDateCurrencyMutation,
+  'no-ng-on-changes-in-signal-based-component': noNgOnChangesInSignalBasedComponent,
 };
 
 const configs = {
