@@ -51,6 +51,17 @@ ruleTester.run('no-mark-for-check-outside-control-value-accessor', rule, {
       code: `
         import { ControlValueAccessor } from '@angular/forms';
 
+        class ExpenseFieldComponent implements ControlValueAccessor {
+          writeValue(): void {
+            this.cdr?.markForCheck();
+          }
+        }
+      `,
+    },
+    {
+      code: `
+        import { ControlValueAccessor } from '@angular/forms';
+
         interface Validator {}
 
         class ExpenseFieldComponent implements Validator, ControlValueAccessor {
@@ -84,6 +95,16 @@ ruleTester.run('no-mark-for-check-outside-control-value-accessor', rule, {
         class ExampleComponent {
           refresh(): void {
             this.cdr.markForCheck();
+          }
+        }
+      `,
+      errors: [{ messageId: 'markForCheckOutsideCva' }],
+    },
+    {
+      code: `
+        class ExampleComponent {
+          refresh(): void {
+            this.cdr?.markForCheck();
           }
         }
       `,
