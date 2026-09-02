@@ -5,6 +5,8 @@ import noInlineDateFormat from './rules/no-inline-date-format.js';
 import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
 import noMarkForCheckOutsideControlValueAccessor from './rules/no-mark-for-check-outside-control-value-accessor.js';
+import noNgOnChangesInSignalBasedComponent from './rules/no-ng-on-changes-in-signal-based-component.js';
+import noCheckedLifecycleHooksInOnPushComponent from './rules/no-checked-lifecycle-hooks-in-onpush-component.js';
 
 const rules = {
   'i18n-key-naming-convention': i18nKeyNamingConvention,
@@ -14,6 +16,8 @@ const rules = {
   'no-hardcoded-strings': noHardcodedStrings,
   'no-date-currency-mutation': noDateCurrencyMutation,
   'no-mark-for-check-outside-control-value-accessor': noMarkForCheckOutsideControlValueAccessor,
+  'no-ng-on-changes-in-signal-based-component': noNgOnChangesInSignalBasedComponent,
+  'no-checked-lifecycle-hooks-in-onpush-component': noCheckedLifecycleHooksInOnPushComponent,
 };
 
 const configs = {
