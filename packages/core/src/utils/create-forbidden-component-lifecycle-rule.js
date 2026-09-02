@@ -1,7 +1,7 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
-  (name) => `https://github.com/fylein/fyle-eslint-plugin/blob/master/packages/docs/rules/${name}.md`,
+  (name) => `https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/${name}.md`,
 );
 
 function getImportedName(specifier) {
