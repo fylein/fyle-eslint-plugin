@@ -1,3 +1,4 @@
+import apiContractNaming from './rules/api-contract-naming.js';
 import i18nKeyNamingConvention from './rules/i18n-key-naming-convention.js';
 import noAngularCurrencyPipe from './rules/no-angular-currency-pipe.js';
 import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-arg.js';
@@ -6,6 +7,7 @@ import noHardcodedStrings from './rules/no-hardcoded-strings.js';
 import noDateCurrencyMutation from './rules/no-date-currency-mutation.js';
 
 const rules = {
+  'api-contract-naming': apiContractNaming,
   'i18n-key-naming-convention': i18nKeyNamingConvention,
   'no-angular-currency-pipe': noAngularCurrencyPipe,
   'no-datepipe-transform-format-arg': noDatepipeTransformFormatArg,
@@ -23,6 +25,7 @@ const configs = {
   },
   strict: {
     rules: {
+      '@fyle/api-contract-naming': 'error',
       '@fyle/i18n-key-naming-convention': 'error',
       '@fyle/no-hardcoded-strings': 'error',
     },

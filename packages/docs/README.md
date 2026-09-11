@@ -8,6 +8,7 @@ This documentation covers all the custom ESLint rules available in the Fyle ESLi
 
 | Rule                         | Description                                                                                      | Documentation                                               |
 | ---------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `api-contract-naming`        | Enforces naming and folder conventions for API models and local interfaces                       | [View Documentation](./rules/api-contract-naming.md)        |
 | `i18n-key-naming-convention` | Enforces consistent naming conventions for i18n translation keys based on file location and type | [View Documentation](./rules/i18n-key-naming-convention.md) |
 | `no-hardcoded-strings`       | Detects hardcoded user-facing strings in Angular applications and enforces i18n best practices   | [View Documentation](./rules/no-hardcoded-strings.md)       |
 
