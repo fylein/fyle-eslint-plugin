@@ -1,14 +1,14 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
 import path from 'node:path';
-import process from 'node:process';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/api-contract-naming.md',
+  () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/model-interface-conventions.md',
 );
 
-const RULE_NAME = 'api-contract-naming';
+const RULE_NAME = 'model-interface-conventions';
 const CONTRACT_IMPORT_PATTERN = /^@fylein\/types(?:\/|$)/;
 const CAMEL_CASE_PATTERN = /^[a-z][A-Za-z0-9]*$/;
+const MODEL_NAME_SUFFIX_PATTERN = /(?:In|Out|Response|GetParams)$/;
 
 function getFilename(context) {
   return context.filename ?? context.getFilename?.() ?? '';
@@ -46,10 +46,6 @@ function toKebabCase(name) {
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .replace(/[\s_]+/g, '-')
     .toLowerCase();
-}
-
-function stripModelUiPrefix(name) {
-  return name.replace(/^UI(?=[A-Z0-9])/, '');
 }
 
 function unwrapType(node) {
@@ -115,33 +111,14 @@ function getStaticMemberName(member) {
   return null;
 }
 
-function isPathInside(rootFolder, filename) {
-  const relativePath = path.relative(rootFolder, filename);
-  return (
-    relativePath === '' ||
-    (!relativePath.startsWith(`..${path.sep}`) && relativePath !== '..' && !path.isAbsolute(relativePath))
-  );
-}
-
 export default createRule({
   name: RULE_NAME,
   meta: {
     type: 'problem',
     docs: {
-      description: 'Enforce naming, folder, export, and UI-extension conventions for API models and local interfaces',
+      description: 'Enforce naming, export, and UI-extension conventions for API models and local interfaces',
     },
-    schema: [
-      {
-        type: 'object',
-        properties: {
-          rootFolder: {
-            type: 'string',
-            description: 'Root folder whose model/ and interface/ children contain contract files',
-          },
-        },
-        additionalProperties: false,
-      },
-    ],
+    schema: [],
     messages: {
       contractFilenameSuffix: "API contract files must use the '.model.ts' suffix.",
       interfaceFilenameSuffix: "Non-contract interface files must use the '.interface.ts' suffix.",
@@ -149,13 +126,13 @@ export default createRule({
         "Model files must import and use at least one type from '@fylein/types' or one of its subpaths.",
       forbiddenModelImport:
         "Model files may only import from '@fylein/types' or one of its subpaths; remove the import from '{{ importPath }}'.",
-      modelFolder: "API contract files must be inside the '{{ folder }}' folder.",
-      interfaceFolder: "Non-contract interface files must be inside the '{{ folder }}' folder.",
       exportedTypeCount: 'API contract files must export exactly one type or interface; found {{ count }}.',
       exportedInterfaceCount:
         'Non-contract files must export exactly one locally declared interface; found {{ count }}.',
       filenameMustMatchExport:
         "Filename must be '{{ expectedFilename }}' to match the exported {{ exportKind }} '{{ exportName }}'.",
+      modelNameSuffix:
+        "API model names must end with 'In', 'Out', 'Response', or 'GetParams'; found '{{ exportName }}'.",
       interfaceOnly:
         'Non-contract interface files must use a local interface declaration, not a type alias or type re-export.',
       interfaceRuntimeDeclaration: 'Non-contract interface files must not contain runtime declarations.',
@@ -165,7 +142,7 @@ export default createRule({
       propertyStaticName: 'Added intersection members must have a statically named camelCase property key.',
     },
   },
-  defaultOptions: [{ rootFolder: '.' }],
+  defaultOptions: [],
   create(context) {
     const filename = getFilename(context);
     if (!filename.endsWith('.ts') || isDeclarationFile(filename) || filename === '<input>') {
@@ -174,17 +151,9 @@ export default createRule({
 
     return {
       'Program:exit'(program) {
-        const cwd = context.cwd ?? process.cwd();
-        const configuredRoot = context.options[0]?.rootFolder ?? '.';
-        const rootFolder = path.resolve(cwd, configuredRoot);
-        const absoluteFilename = path.isAbsolute(filename) ? path.normalize(filename) : path.resolve(cwd, filename);
-        const basename = path.basename(absoluteFilename);
-        const relativePath = path.relative(rootFolder, absoluteFilename);
-        const firstFolder = isPathInside(rootFolder, absoluteFilename) ? relativePath.split(path.sep)[0] : null;
-        const inModelFolder = firstFolder === 'model';
-        const inInterfaceFolder = firstFolder === 'interface';
-        const modelAttempt = basename.endsWith('.model.ts') || inModelFolder;
-        const interfaceAttempt = basename.endsWith('.interface.ts') || inInterfaceFolder;
+        const basename = path.basename(filename);
+        const modelAttempt = basename.endsWith('.model.ts');
+        const interfaceAttempt = basename.endsWith('.interface.ts');
 
         const localDeclarations = new Map();
         const localTypeNames = new Set();
@@ -240,14 +209,14 @@ export default createRule({
           (statement) => !isRuntimeFreeStatement(statement, localTypeNames, importedTypeNames),
         );
         const isRuntimeFree = runtimeStatements.length === 0;
-        const isInterfaceFile = !hasContractImport && (interfaceAttempt || (hasTypeSyntax && isRuntimeFree));
-        const isModelFile = hasContractImport || (!isInterfaceFile && modelAttempt);
+        const isModelFile = hasContractImport || modelAttempt;
+        const isInterfaceFile = !isModelFile && (interfaceAttempt || (hasTypeSyntax && isRuntimeFree));
 
         if (modelAttempt && !hasContractImport) {
           context.report({ node: program, messageId: 'missingContractImport' });
         }
 
-        if (isModelFile || modelAttempt) {
+        if (isModelFile) {
           for (const statement of program.body) {
             if (
               statement.type === 'ImportDeclaration' &&
@@ -271,16 +240,6 @@ export default createRule({
         if (hasContractImport && !usesContractImport) {
           context.report({ node: program, messageId: 'missingContractImport' });
         }
-
-        const reportFolder = (expectedFolder, messageId) => {
-          if (firstFolder !== expectedFolder) {
-            context.report({
-              node: program,
-              messageId,
-              data: { folder: path.join(configuredRoot, expectedFolder) },
-            });
-          }
-        };
 
         const getTypeExports = () => {
           const exports = [];
@@ -328,9 +287,8 @@ export default createRule({
 
         const { exports: typeExports, hasTypeExportAll } = getTypeExports();
 
-        const reportFilenameMatch = (exported, suffix, stripUiPrefix) => {
-          const sourceName = stripUiPrefix ? stripModelUiPrefix(exported.name) : exported.name;
-          const expectedFilename = `${toKebabCase(sourceName)}${suffix}`;
+        const reportFilenameMatch = (exported, suffix) => {
+          const expectedFilename = `${toKebabCase(exported.name)}${suffix}`;
           if (basename !== expectedFilename) {
             context.report({
               node: exported.node,
@@ -420,7 +378,6 @@ export default createRule({
           if (!basename.endsWith('.model.ts')) {
             context.report({ node: program, messageId: 'contractFilenameSuffix' });
           }
-          reportFolder('model', 'modelFolder');
           const exportCount = hasTypeExportAll ? typeExports.length + 1 : typeExports.length;
           if (exportCount !== 1 || hasTypeExportAll) {
             context.report({
@@ -429,7 +386,14 @@ export default createRule({
               data: { count: hasTypeExportAll ? 'an unknown number of' : String(exportCount) },
             });
           } else {
-            reportFilenameMatch(typeExports[0], '.model.ts', true);
+            reportFilenameMatch(typeExports[0], '.model.ts');
+            if (modelAttempt && !MODEL_NAME_SUFFIX_PATTERN.test(typeExports[0].name)) {
+              context.report({
+                node: typeExports[0].node,
+                messageId: 'modelNameSuffix',
+                data: { exportName: typeExports[0].name },
+              });
+            }
             checkContractIntersection(typeExports[0]);
           }
         }
@@ -438,8 +402,6 @@ export default createRule({
           if (!basename.endsWith('.interface.ts')) {
             context.report({ node: program, messageId: 'interfaceFilenameSuffix' });
           }
-          reportFolder('interface', 'interfaceFolder');
-
           for (const declaration of localDeclarations.values()) {
             if (declaration.type === 'TSTypeAliasDeclaration') {
               context.report({ node: declaration, messageId: 'interfaceOnly' });
@@ -472,7 +434,7 @@ export default createRule({
               data: { count: String(interfaceExports.length) },
             });
           } else {
-            reportFilenameMatch(interfaceExports[0], '.interface.ts', false);
+            reportFilenameMatch(interfaceExports[0], '.interface.ts');
           }
         }
       },
