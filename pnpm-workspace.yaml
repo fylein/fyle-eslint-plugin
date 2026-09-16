@@ -1,12 +1,15 @@
 packages:
   - "packages/*"
 
-# Security: transitive dependency pins (yaml, js-yaml, picomatch, brace-expansion).
+# Security: transitive dependency pins.
 # https://pnpm.io/settings#overrides
 overrides:
   yaml: "2.8.3"
-  "js-yaml@<3.15.0": "3.15.0"
-  "js-yaml@>=4.0.0 <4.3.0": "4.3.0"
+  "js-yaml@<3.15.2": "3.15.2"
+  "js-yaml@>=4.0.0 <4.3.2": "4.3.2"
+  "browserslist@<4.28.7": "4.28.7"
+  "baseline-browser-mapping@<2.11.0": "2.11.0"
+  "@humanfs/node@<0.16.8": "0.16.8"
   "micromatch>picomatch": "2.3.2"
   "anymatch>picomatch": "2.3.2"
   "jest-util@29>picomatch": "2.3.2"
