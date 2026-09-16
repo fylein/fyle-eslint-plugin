@@ -1,3 +1,4 @@
+import modelInterfaceConventions from './rules/model-interface-conventions.js';
 import i18nKeyNamingConvention from './rules/i18n-key-naming-convention.js';
 import noAngularCurrencyPipe from './rules/no-angular-currency-pipe.js';
 import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-arg.js';
@@ -9,6 +10,7 @@ import noNgOnChangesInSignalBasedComponent from './rules/no-ng-on-changes-in-sig
 import noCheckedLifecycleHooksInOnPushComponent from './rules/no-checked-lifecycle-hooks-in-onpush-component.js';
 
 const rules = {
+  'model-interface-conventions': modelInterfaceConventions,
   'i18n-key-naming-convention': i18nKeyNamingConvention,
   'no-angular-currency-pipe': noAngularCurrencyPipe,
   'no-datepipe-transform-format-arg': noDatepipeTransformFormatArg,
@@ -29,6 +31,7 @@ const configs = {
   },
   strict: {
     rules: {
+      '@fyle/model-interface-conventions': 'error',
       '@fyle/i18n-key-naming-convention': 'error',
       '@fyle/no-hardcoded-strings': 'error',
     },
