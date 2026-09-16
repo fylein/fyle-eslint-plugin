@@ -18,7 +18,7 @@ ruleTester.run('model-interface-conventions', rule, {
       filename: 'models/type-a-out.model.ts',
       code: `
         import type { TypeAOut as ApiTypeAOut } from '@fylein/types';
-        export interface TypeAOut extends ApiTypeAOut {}
+        export type TypeAOut = ApiTypeAOut;
       `,
     },
     {
@@ -54,7 +54,7 @@ ruleTester.run('model-interface-conventions', rule, {
       code: `
         import type { TypeAOut as ApiTypeAOut } from '@fylein/types/owner';
 
-        export interface TypeAOut extends ApiTypeAOut { value: string }
+        export type TypeAOut = ApiTypeAOut;
       `,
     },
     {
@@ -62,7 +62,7 @@ ruleTester.run('model-interface-conventions', rule, {
       code: `
         import type { URLDetailsResponse as ApiURLDetailsResponse } from '@fylein/types/owner';
 
-        export interface URLDetailsResponse extends ApiURLDetailsResponse { value: string }
+        export type URLDetailsResponse = ApiURLDetailsResponse;
       `,
     },
     {
@@ -98,6 +98,19 @@ ruleTester.run('model-interface-conventions', rule, {
       code: `export interface ExpenseDetails { amount: number }`,
     },
     {
+      filename: '/project/domain/expense-details.interface.ts',
+      code: `
+        import type { ExpenseOut } from '@fylein/types/spender';
+        import type { DisplayDetails } from './display-details.interface';
+
+        export interface ExpenseDetails {
+          expense: ExpenseOut;
+          displayDetails: DisplayDetails;
+          amount: number;
+        }
+      `,
+    },
+    {
       filename: '/project/expense-details.interface.ts',
       code: `
         interface ExpenseDetails { amount: number }
@@ -126,9 +139,17 @@ ruleTester.run('model-interface-conventions', rule, {
       filename: '/project/type-a.ts',
       code: `
         import type { TypeA as ApiTypeA } from '@fylein/types';
-        export interface TypeA extends ApiTypeA {}
+        export type TypeA = ApiTypeA;
       `,
       errors: [{ messageId: 'contractFilenameSuffix' }, { messageId: 'filenameMustMatchExport' }],
+    },
+    {
+      filename: '/project/type-a-out.model.ts',
+      code: `
+        import type { TypeAOut as ApiTypeAOut } from '@fylein/types';
+        export interface TypeAOut extends ApiTypeAOut {}
+      `,
+      errors: [{ messageId: 'modelOnly' }],
     },
     {
       filename: '/project/type-a.model.ts',
@@ -157,12 +178,28 @@ ruleTester.run('model-interface-conventions', rule, {
     {
       filename: '/project/local-model-out.model.ts',
       code: `export interface LocalModelOut { value: string }`,
-      errors: [{ messageId: 'missingContractImport' }],
+      errors: [{ messageId: 'missingContractImport' }, { messageId: 'modelOnly' }],
     },
     {
       filename: '/project/expense-details.interface.ts',
       code: `export type ExpenseDetails = { amount: number };`,
       errors: [{ messageId: 'exportedInterfaceCount' }, { messageId: 'interfaceOnly' }],
+    },
+    {
+      filename: '/project/expense-details.interface.ts',
+      code: `
+        type ExpenseId = string;
+        export interface ExpenseDetails { id: ExpenseId }
+      `,
+      errors: [{ messageId: 'interfaceOnly' }],
+    },
+    {
+      filename: '/project/expense-details.interface.ts',
+      code: `
+        import type { ExpenseOut } from '@fylein/types/spender';
+        export interface ExpenseDetails extends ExpenseOut { displayName: string }
+      `,
+      errors: [{ messageId: 'interfaceExtends' }],
     },
     {
       filename: '/project/expense-details.interface.ts',
@@ -203,8 +240,8 @@ ruleTester.run('model-interface-conventions', rule, {
       filename: '/project/type-a-out.model.ts',
       code: `
         import type { TypeAOut, TypeBOut } from '@fylein/types';
-        export interface TypeAOut extends TypeAOut {}
-        export interface TypeBOut extends TypeBOut {}
+        export type LocalTypeAOut = TypeAOut;
+        export type LocalTypeBOut = TypeBOut;
       `,
       errors: [{ messageId: 'exportedTypeCount' }],
     },

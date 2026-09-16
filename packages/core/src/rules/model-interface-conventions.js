@@ -116,26 +116,28 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description: 'Enforce naming, export, and UI-extension conventions for API models and local interfaces',
+      description: 'Enforce naming, export, and UI-extension conventions for API models and UI interfaces',
     },
     schema: [],
     messages: {
       contractFilenameSuffix: "API contract files must use the '.model.ts' suffix.",
-      interfaceFilenameSuffix: "Non-contract interface files must use the '.interface.ts' suffix.",
+      interfaceFilenameSuffix: "UI interface files must use the '.interface.ts' suffix.",
       missingContractImport:
         "Model files must import and use at least one type from '@fylein/types' or one of its subpaths.",
       forbiddenModelImport:
         "Model files may only import from '@fylein/types' or one of its subpaths; remove the import from '{{ importPath }}'.",
-      exportedTypeCount: 'API contract files must export exactly one type or interface; found {{ count }}.',
+      exportedTypeCount: 'API model files must export exactly one type; found {{ count }}.',
       exportedInterfaceCount:
-        'Non-contract files must export exactly one locally declared interface; found {{ count }}.',
+        'UI interface files must export exactly one locally declared interface; found {{ count }}.',
       filenameMustMatchExport:
         "Filename must be '{{ expectedFilename }}' to match the exported {{ exportKind }} '{{ exportName }}'.",
       modelNameSuffix:
         "API model names must end with 'In', 'Out', 'Response', or 'GetParams'; found '{{ exportName }}'.",
+      modelOnly: 'API model files may declare types only; interface declarations are not allowed.',
       interfaceOnly:
-        'Non-contract interface files must use a local interface declaration, not a type alias or type re-export.',
-      interfaceRuntimeDeclaration: 'Non-contract interface files must not contain runtime declarations.',
+        'UI interface files may declare interfaces only; type aliases and type re-exports are not allowed.',
+      interfaceExtends: 'UI interfaces must not extend other types; use those types in properties instead.',
+      interfaceRuntimeDeclaration: 'UI interface files must not contain runtime declarations.',
       uiTypeName: "An API type that adds properties to '{{ importedName }}' must be named '{{ expectedName }}'.",
       misleadingUiPrefix: "Type '{{ exportName }}' uses a UI prefix but adds no properties to its imported API type.",
       propertyCamelCase: "Added property '{{ propertyName }}' must use camelCase.",
@@ -209,14 +211,20 @@ export default createRule({
           (statement) => !isRuntimeFreeStatement(statement, localTypeNames, importedTypeNames),
         );
         const isRuntimeFree = runtimeStatements.length === 0;
-        const isModelFile = hasContractImport || modelAttempt;
-        const isInterfaceFile = !isModelFile && (interfaceAttempt || (hasTypeSyntax && isRuntimeFree));
+        const isInterfaceFile =
+          interfaceAttempt || (!modelAttempt && !hasContractImport && hasTypeSyntax && isRuntimeFree);
+        const isModelFile = !isInterfaceFile && (hasContractImport || modelAttempt);
 
         if (modelAttempt && !hasContractImport) {
           context.report({ node: program, messageId: 'missingContractImport' });
         }
 
         if (isModelFile) {
+          for (const declaration of localDeclarations.values()) {
+            if (declaration.type === 'TSInterfaceDeclaration') {
+              context.report({ node: declaration, messageId: 'modelOnly' });
+            }
+          }
           for (const statement of program.body) {
             if (
               statement.type === 'ImportDeclaration' &&
@@ -237,7 +245,7 @@ export default createRule({
             (variable) => contractImportLocalNames.has(variable.name) && variable.references.length > 0,
           ),
         );
-        if (hasContractImport && !usesContractImport) {
+        if (isModelFile && hasContractImport && !usesContractImport) {
           context.report({ node: program, messageId: 'missingContractImport' });
         }
 
@@ -405,6 +413,9 @@ export default createRule({
           for (const declaration of localDeclarations.values()) {
             if (declaration.type === 'TSTypeAliasDeclaration') {
               context.report({ node: declaration, messageId: 'interfaceOnly' });
+            }
+            if (declaration.type === 'TSInterfaceDeclaration' && declaration.extends.length > 0) {
+              context.report({ node: declaration.extends[0], messageId: 'interfaceExtends' });
             }
           }
           for (const statement of program.body) {

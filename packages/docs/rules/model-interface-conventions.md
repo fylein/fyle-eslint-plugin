@@ -18,12 +18,12 @@ The rule does not require a particular directory structure.
 
 ## API Models
 
-A file that imports from `@fylein/types` or one of its subpaths is an API model. Files ending in `.model.ts` are also treated as API models. An API model must:
+A file ending in `.model.ts` is an API model. A file that imports from `@fylein/types` or one of its subpaths is also treated as an API model unless it explicitly ends in `.interface.ts`. An API model must:
 
 - End in `.model.ts`.
 - Import and use at least one type from `@fylein/types` or one of its subpaths.
 - Contain no imports from other packages or relative paths.
-- Export exactly one type or interface.
+- Declare and export exactly one type, with no interface declarations.
 - Use a kebab-case filename matching the complete exported name.
 - Export a name ending in `In`, `Out`, `Response`, or `GetParams`.
 
@@ -55,20 +55,24 @@ export type UIExpenseOut = ExpenseOut & {};
 
 When an added-property intersection has exactly one imported API base, import aliases are resolved to the original export name, so an alias of `ExpenseOut` still requires `UIExpenseOut`. Intersections containing multiple imported API base types are allowed and do not receive a UI-name diagnostic.
 
-## Local Interfaces
+## UI Interfaces
 
-A runtime-free file containing local type definitions and no `@fylein/types` import is a non-contract interface file. It must:
+A file ending in `.interface.ts` is a UI interface even when it imports API types from `@fylein/types`. Other runtime-free files containing local type definitions and no `@fylein/types` imports are also treated as UI interfaces. A UI interface may import types from `@fylein/types`, other packages, or relative paths. It must:
 
 - End in `.interface.ts`.
 - Export exactly one locally declared interface.
 - Use a kebab-case filename matching the complete interface name.
-- Contain no type aliases, type re-exports, or runtime declarations.
+- Declare interfaces only, with no `type` aliases, type re-exports, or runtime declarations. Type-only imports remain allowed for property types.
+- Use imported types in properties instead of extending them.
 
 ```typescript
-// filter-state.interface.ts
-export interface FilterState {
-  searchText: string;
-  isEnabled: boolean;
+// expense-details.interface.ts
+import type { ExpenseOut } from '@fylein/types/spender';
+
+export interface ExpenseDetails {
+  expense: ExpenseOut;
+  displayName: string;
+  isSelected: boolean;
 }
 ```
 
