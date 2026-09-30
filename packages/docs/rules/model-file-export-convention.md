@@ -1,6 +1,6 @@
 # Model File Export Convention
 
-The `model-file-export-convention` rule keeps app-v2 model files predictable.
+The `model-file-export-convention` rule keeps model files predictable.
 
 ## Configuration
 

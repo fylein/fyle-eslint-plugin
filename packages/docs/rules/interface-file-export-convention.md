@@ -1,6 +1,6 @@
 # Interface File Export Convention
 
-The `interface-file-export-convention` rule keeps app-v2 interface files predictable.
+The `interface-file-export-convention` rule keeps interface files predictable.
 
 ## Configuration
 
