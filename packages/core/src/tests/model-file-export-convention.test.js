@@ -27,6 +27,22 @@ ruleTester.run('model-file-export-convention', rule, {
       code: 'export type URLDetailsResponse = { url: string };',
     },
     {
+      filename: '/project/ui-report-out.model.ts',
+      code: `
+        import { ReportOut } from '@fylein/types/cross-role';
+        import { Dateify } from './dateify.model';
+        export type UIReportOut = Dateify<ReportOut>;
+      `,
+    },
+    {
+      filename: '/project/ui-expense-out.model.ts',
+      code: `
+        import type { ExpenseOut } from '@fylein/types';
+        import type { Dateify } from './dateify.model';
+        export type UIExpenseOut = Dateify<ExpenseOut> & { inlineEditable?: boolean };
+      `,
+    },
+    {
       filename: '/project/example.component.ts',
       code: 'export interface Example { value: string }',
     },
@@ -69,6 +85,23 @@ ruleTester.run('model-file-export-convention', rule, {
           data: { expectedFilename: 'expense-out.model.ts', exportName: 'ExpenseOut' },
         },
       ],
+    },
+    {
+      filename: '/project/report-out.model.ts',
+      code: `
+        import { ReportOut } from '@fylein/types/cross-role';
+        import { Dateify } from './dateify.model';
+        export type ReportOut = Dateify<ReportOut>;
+      `,
+      errors: [{ messageId: 'uiPrefixRequired', data: { exportName: 'ReportOut' } }],
+    },
+    {
+      filename: '/project/expense-out.model.ts',
+      code: `
+        import type { ExpenseOut } from '@fylein/types';
+        export type ExpenseOut = ExpenseOut & { inlineEditable?: boolean };
+      `,
+      errors: [{ messageId: 'uiPrefixRequired', data: { exportName: 'ExpenseOut' } }],
     },
   ],
 });

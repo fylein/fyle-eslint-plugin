@@ -22,3 +22,5 @@ export type UIExpenseOut = {
 ```
 
 Interfaces, type re-exports, export-all statements, and multiple exported type aliases are not allowed.
+
+When the exported type is derived from a type imported from `@fylein/types` (including its subpaths), its name must start with `UI`. For example, `Dateify<ReportOut>` must be exported as `UIReportOut`, in `ui-report-out.model.ts`.
