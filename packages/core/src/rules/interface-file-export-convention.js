@@ -2,10 +2,11 @@ import { ESLintUtils } from '@typescript-eslint/utils';
 import path from 'node:path';
 
 const createRule = ESLintUtils.RuleCreator(
-  () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/model-file-export-convention.md',
+  () =>
+    'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/interface-file-export-convention.md',
 );
 
-const RULE_NAME = 'model-file-export-convention';
+const RULE_NAME = 'interface-file-export-convention';
 
 function getFilename(context) {
   return context.filename ?? context.getFilename?.() ?? '';
@@ -24,30 +25,30 @@ export default createRule({
   meta: {
     type: 'problem',
     docs: {
-      description: 'Require model files to export one type whose name matches the filename',
+      description: 'Require interface files to export one interface whose name matches the filename',
     },
     schema: [],
     messages: {
-      exportCount: 'Model files must export exactly one local type; found {{ count }}.',
-      invalidExport: 'Model files must export a local type declaration, not {{ exportKind }}.',
-      interfaceNotAllowed: 'Model files must not contain interface declarations.',
+      exportCount: 'Interface files must export exactly one local interface; found {{ count }}.',
+      invalidExport: 'Interface files must export a local interface declaration, not {{ exportKind }}.',
+      typeNotAllowed: 'Interface files must not contain type declarations.',
       filenameMustMatchExport:
-        "Filename must be '{{ expectedFilename }}' to match the exported type '{{ exportName }}'.",
+        "Filename must be '{{ expectedFilename }}' to match the exported interface '{{ exportName }}'.",
     },
   },
   defaultOptions: [],
   create(context) {
     const filename = getFilename(context);
-    if (!filename.endsWith('.model.ts') || filename === '<input>') {
+    if (!filename.endsWith('.interface.ts') || filename === '<input>') {
       return {};
     }
 
     return {
-      TSInterfaceDeclaration(node) {
-        context.report({ node, messageId: 'interfaceNotAllowed' });
+      TSTypeAliasDeclaration(node) {
+        context.report({ node, messageId: 'typeNotAllowed' });
       },
       'Program:exit'(program) {
-        const exportedTypes = [];
+        const exportedInterfaces = [];
         const invalidExports = [];
 
         for (const statement of program.body) {
@@ -55,12 +56,12 @@ export default createRule({
             continue;
           }
 
-          if (statement.declaration?.type === 'TSTypeAliasDeclaration') {
-            exportedTypes.push(statement.declaration);
+          if (statement.declaration?.type === 'TSInterfaceDeclaration') {
+            exportedInterfaces.push(statement.declaration);
             continue;
           }
 
-          if (statement.declaration && statement.declaration.type !== 'TSInterfaceDeclaration') {
+          if (statement.declaration && statement.declaration.type !== 'TSTypeAliasDeclaration') {
             invalidExports.push({ node: statement.declaration, exportKind: statement.declaration.type });
             continue;
           }
@@ -74,33 +75,31 @@ export default createRule({
           }
         }
 
-        if (invalidExports.length > 0) {
-          for (const exported of invalidExports) {
-            context.report({
-              node: exported.node,
-              messageId: 'invalidExport',
-              data: { exportKind: exported.exportKind },
-            });
-          }
+        for (const exported of invalidExports) {
+          context.report({
+            node: exported.node,
+            messageId: 'invalidExport',
+            data: { exportKind: exported.exportKind },
+          });
         }
 
-        if (exportedTypes.length !== 1) {
+        if (exportedInterfaces.length !== 1) {
           context.report({
             node: program,
             messageId: 'exportCount',
-            data: { count: String(exportedTypes.length) },
+            data: { count: String(exportedInterfaces.length) },
           });
           return;
         }
 
-        const exportedType = exportedTypes[0];
-        const exportName = exportedType.id.name;
-        const expectedFilename = `${toKebabCase(exportName)}.model.ts`;
+        const exportedInterface = exportedInterfaces[0];
+        const exportName = exportedInterface.id.name;
+        const expectedFilename = `${toKebabCase(exportName)}.interface.ts`;
         const basename = path.basename(filename);
 
         if (basename !== expectedFilename) {
           context.report({
-            node: exportedType.id,
+            node: exportedInterface.id,
             messageId: 'filenameMustMatchExport',
             data: { expectedFilename, exportName },
           });
