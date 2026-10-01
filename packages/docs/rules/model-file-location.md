@@ -20,4 +20,4 @@ The `model-file-location` rule keeps TypeScript shape declarations in configured
 }
 ```
 
-Files containing `type` or `interface` declarations must be named `.model.ts` and live under one of the configured model folders. `skipFiles` allows specific `.interface.ts` files to bypass this placement rule; those files remain subject to the interface-file convention rule.
+Every TypeScript file under a configured model folder must end in `.model.ts`. `skipFiles` allows specific `.interface.ts` files to bypass this filename requirement; those files remain subject to the interface-file convention rule. Type and interface declarations outside the configured model folders are also rejected.
