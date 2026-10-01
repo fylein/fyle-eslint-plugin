@@ -63,6 +63,18 @@ ruleTester.run('model-file-export-convention', rule, {
     },
     {
       filename: '/project/expense-out.model.ts',
+      code: `
+        export type ExpenseOut = { id: string };
+        export type OtherOut = { id: string };
+        export type AnotherOut = { id: string };
+      `,
+      errors: [
+        { messageId: 'exportCount', data: { count: '3' } },
+        { messageId: 'exportCount', data: { count: '3' } },
+      ],
+    },
+    {
+      filename: '/project/expense-out.model.ts',
       code: 'export interface ExpenseOut { id: string }',
       errors: [{ messageId: 'exportCount', data: { count: '0' } }, { messageId: 'interfaceNotAllowed' }],
     },

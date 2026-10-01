@@ -86,6 +86,7 @@ export default createRule({
       },
       'Program:exit'(program) {
         const exportedTypes = [];
+        const exportedTypeStatements = [];
         const invalidExports = [];
         const importedTypeNames = new Set();
 
@@ -106,6 +107,7 @@ export default createRule({
 
           if (statement.declaration?.type === 'TSTypeAliasDeclaration') {
             exportedTypes.push(statement.declaration);
+            exportedTypeStatements.push(statement);
             continue;
           }
 
@@ -133,12 +135,23 @@ export default createRule({
           }
         }
 
-        if (exportedTypes.length !== 1) {
+        if (exportedTypes.length === 0) {
           context.report({
             node: program,
             messageId: 'exportCount',
             data: { count: String(exportedTypes.length) },
           });
+          return;
+        }
+
+        if (exportedTypes.length > 1) {
+          for (const statement of exportedTypeStatements.slice(1)) {
+            context.report({
+              node: statement,
+              messageId: 'exportCount',
+              data: { count: String(exportedTypes.length) },
+            });
+          }
           return;
         }
 
