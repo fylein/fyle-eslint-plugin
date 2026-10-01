@@ -16,12 +16,12 @@ function toRelativePosixPath(filename, cwd) {
   return path.relative(cwd, filename).split(path.sep).join('/');
 }
 
-function matchesModelFolder(filename, modelFolders) {
+function isInModelFolder(filename, modelFolders) {
   return modelFolders.some((folder) => {
     const normalizedFolder = folder.replace(/\\/g, '/').replace(/\/$/, '');
     return (
-      minimatch(filename, `${normalizedFolder}/*.model.ts`, { dot: true }) ||
-      minimatch(filename, `${normalizedFolder}/**/*.model.ts`, { dot: true })
+      minimatch(filename, `${normalizedFolder}/*.ts`, { dot: true }) ||
+      minimatch(filename, `${normalizedFolder}/**/*.ts`, { dot: true })
     );
   });
 }
@@ -58,6 +58,8 @@ export default createRule({
     messages: {
       declarationMustBeInModelFile:
         'Type and interface declarations must be in a .model.ts file under a configured model folder.',
+      fileMustBeModelOrSkippedInterface:
+        'Files under configured model folders must end in .model.ts unless matched by skipFiles.',
     },
   },
   defaultOptions: [{ modelFolders: [], skipFiles: [] }],
@@ -70,9 +72,19 @@ export default createRule({
     const relativeFilename = toRelativePosixPath(filename, context.cwd ?? path.resolve('.'));
     const modelFolders = options?.modelFolders ?? [];
     const skipFiles = options?.skipFiles ?? [];
+    const isInConfiguredModelFolder = isInModelFolder(relativeFilename, modelFolders);
+    const isSkippedInterfaceFile = matchesSkipFile(relativeFilename, skipFiles);
 
-    if (matchesSkipFile(relativeFilename, skipFiles) || matchesModelFolder(relativeFilename, modelFolders)) {
+    if (isSkippedInterfaceFile || (isInConfiguredModelFolder && filename.endsWith('.model.ts'))) {
       return {};
+    }
+
+    if (isInConfiguredModelFolder) {
+      return {
+        'Program:exit'(program) {
+          context.report({ node: program, messageId: 'fileMustBeModelOrSkippedInterface' });
+        },
+      };
     }
 
     return {

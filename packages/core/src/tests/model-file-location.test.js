@@ -54,7 +54,13 @@ ruleTester.run('model-file-location', rule, {
       filename: `${root}/apps/expenses/src/models/expense.ts`,
       code: 'export interface Expense { id: string }',
       options,
-      errors: [{ messageId: 'declarationMustBeInModelFile' }],
+      errors: [{ messageId: 'fileMustBeModelOrSkippedInterface' }],
+    },
+    {
+      filename: `${root}/apps/expenses/src/models/helpers.ts`,
+      code: 'export function formatExpense(value) { return value; }',
+      options,
+      errors: [{ messageId: 'fileMustBeModelOrSkippedInterface' }],
     },
     {
       filename: `${root}/apps/expenses/src/features/budget/budget.interface.ts`,
