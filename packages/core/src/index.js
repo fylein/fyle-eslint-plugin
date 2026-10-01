@@ -1,6 +1,8 @@
 import modelFileExportConvention from './rules/model-file-export-convention.js';
 import interfaceFileExportConvention from './rules/interface-file-export-convention.js';
 import noTypeDeclarationsInArtifacts from './rules/no-type-declarations-in-artifacts.js';
+import noEnums from './rules/no-enums.js';
+import modelFileLocation from './rules/model-file-location.js';
 import i18nKeyNamingConvention from './rules/i18n-key-naming-convention.js';
 import noAngularCurrencyPipe from './rules/no-angular-currency-pipe.js';
 import noDatepipeTransformFormatArg from './rules/no-datepipe-transform-format-arg.js';
@@ -15,6 +17,8 @@ const rules = {
   'model-file-export-convention': modelFileExportConvention,
   'interface-file-export-convention': interfaceFileExportConvention,
   'no-type-declarations-in-artifacts': noTypeDeclarationsInArtifacts,
+  'no-enums': noEnums,
+  'model-file-location': modelFileLocation,
   'i18n-key-naming-convention': i18nKeyNamingConvention,
   'no-angular-currency-pipe': noAngularCurrencyPipe,
   'no-datepipe-transform-format-arg': noDatepipeTransformFormatArg,
@@ -38,6 +42,7 @@ const configs = {
       '@fyle/model-file-export-convention': 'error',
       '@fyle/interface-file-export-convention': 'error',
       '@fyle/no-type-declarations-in-artifacts': 'error',
+      '@fyle/no-enums': 'error',
       '@fyle/i18n-key-naming-convention': 'error',
       '@fyle/no-hardcoded-strings': 'error',
     },

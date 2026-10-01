@@ -10,6 +10,9 @@
   "exports": {
     ".": "./src/index.js"
   },
+  "dependencies": {
+    "minimatch": "^10.2.5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/fylein/fyle-eslint-plugin.git",
