@@ -59,7 +59,7 @@ ruleTester.run('model-file-export-convention', rule, {
         export type ExpenseOut = { id: string };
         export type OtherOut = { id: string };
       `,
-      errors: [{ messageId: 'exportCount', data: { count: '2' } }],
+      errors: [{ messageId: 'extraExportedType' }],
     },
     {
       filename: '/project/expense-out.model.ts',
@@ -68,10 +68,7 @@ ruleTester.run('model-file-export-convention', rule, {
         export type OtherOut = { id: string };
         export type AnotherOut = { id: string };
       `,
-      errors: [
-        { messageId: 'exportCount', data: { count: '3' } },
-        { messageId: 'exportCount', data: { count: '3' } },
-      ],
+      errors: [{ messageId: 'extraExportedType' }, { messageId: 'extraExportedType' }],
     },
     {
       filename: '/project/expense-out.model.ts',

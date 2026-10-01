@@ -66,6 +66,7 @@ export default createRule({
     schema: [],
     messages: {
       exportCount: 'Model files must export exactly one local type; found {{ count }}.',
+      extraExportedType: 'Model files must export exactly one local type; this is an additional exported type.',
       invalidExport: 'Model files must export a local type declaration, not {{ exportKind }}.',
       interfaceNotAllowed: 'Model files must not contain interface declarations.',
       uiPrefixRequired: "Model types derived from '@fylein/types' must start with 'UI'; found '{{ exportName }}'.",
@@ -80,13 +81,26 @@ export default createRule({
       return {};
     }
 
+    const exportedTypes = [];
+    const exportedTypeStatements = [];
+
     return {
       TSInterfaceDeclaration(node) {
         context.report({ node, messageId: 'interfaceNotAllowed' });
       },
+      ExportNamedDeclaration(node) {
+        if (node.declaration?.type !== 'TSTypeAliasDeclaration') {
+          return;
+        }
+
+        exportedTypes.push(node.declaration);
+        exportedTypeStatements.push(node);
+
+        if (exportedTypes.length > 1) {
+          context.report({ node, messageId: 'extraExportedType' });
+        }
+      },
       'Program:exit'(program) {
-        const exportedTypes = [];
-        const exportedTypeStatements = [];
         const invalidExports = [];
         const importedTypeNames = new Set();
 
@@ -106,8 +120,6 @@ export default createRule({
           }
 
           if (statement.declaration?.type === 'TSTypeAliasDeclaration') {
-            exportedTypes.push(statement.declaration);
-            exportedTypeStatements.push(statement);
             continue;
           }
 
@@ -145,13 +157,6 @@ export default createRule({
         }
 
         if (exportedTypes.length > 1) {
-          for (const statement of exportedTypeStatements.slice(1)) {
-            context.report({
-              node: statement,
-              messageId: 'exportCount',
-              data: { count: String(exportedTypes.length) },
-            });
-          }
           return;
         }
 
