@@ -2,11 +2,11 @@ import { RuleTester } from '@typescript-eslint/rule-tester';
 import tsParser from '@typescript-eslint/parser';
 import rule from '../rules/model-file-location.js';
 
-const root = process.cwd();
+const root = '/project';
 const options = [
   {
     modelFolders: ['**/apps/*/src/models'],
-    skipFiles: ['**/apps/*/src/features/*/**/*.interface.ts'],
+    skipFiles: ['budget.interface.ts'],
   },
 ];
 
@@ -29,6 +29,11 @@ ruleTester.run('model-file-location', rule, {
     },
     {
       filename: `${root}/apps/expenses/src/features/budget/budget.interface.ts`,
+      code: 'export interface Budget { amount: number }',
+      options,
+    },
+    {
+      filename: `${root}/apps/expenses/src/models/budget.interface.ts`,
       code: 'export interface Budget { amount: number }',
       options,
     },
@@ -59,6 +64,12 @@ ruleTester.run('model-file-location', rule, {
     {
       filename: `${root}/apps/expenses/src/models/helpers.ts`,
       code: 'export function formatExpense(value) { return value; }',
+      options,
+      errors: [{ messageId: 'fileMustBeModelOrSkippedInterface' }],
+    },
+    {
+      filename: `${root}/apps/expenses/src/models/other.interface.ts`,
+      code: 'export interface Other { value: string }',
       options,
       errors: [{ messageId: 'fileMustBeModelOrSkippedInterface' }],
     },

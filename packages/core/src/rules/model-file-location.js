@@ -1,6 +1,8 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
-import { minimatch } from 'minimatch';
+import * as minimatchModule from 'minimatch';
 import path from 'node:path';
+
+const minimatch = minimatchModule.minimatch ?? minimatchModule.default;
 
 const createRule = ESLintUtils.RuleCreator(
   () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/model-file-location.md',
@@ -27,7 +29,8 @@ function isInModelFolder(filename, modelFolders) {
 }
 
 function matchesSkipFile(filename, skipFiles) {
-  return skipFiles.some((pattern) => minimatch(filename, pattern, { dot: true }));
+  const basename = path.posix.basename(filename);
+  return skipFiles.some((skipFile) => basename === skipFile);
 }
 
 export default createRule({
@@ -48,7 +51,11 @@ export default createRule({
           },
           skipFiles: {
             type: 'array',
-            items: { type: 'string', minLength: 1, pattern: '\\.interface\\.ts$' },
+            items: {
+              type: 'string',
+              minLength: 1,
+              pattern: '^[^/\\\\*?\\[\\]{}!]+\\.interface\\.ts$',
+            },
           },
         },
         required: ['modelFolders'],
