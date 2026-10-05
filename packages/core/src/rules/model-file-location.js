@@ -1,6 +1,8 @@
 import { ESLintUtils } from '@typescript-eslint/utils';
-import { minimatch } from 'minimatch';
+import * as minimatchModule from 'minimatch';
 import path from 'node:path';
+
+const minimatch = minimatchModule.minimatch ?? minimatchModule.default;
 
 const createRule = ESLintUtils.RuleCreator(
   () => 'https://github.com/fylein/fyle-eslint-plugin/blob/main/packages/docs/rules/model-file-location.md',
