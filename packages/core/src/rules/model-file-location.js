@@ -29,7 +29,8 @@ function isInModelFolder(filename, modelFolders) {
 }
 
 function matchesSkipFile(filename, skipFiles) {
-  return skipFiles.some((skipFile) => filename === skipFile.replace(/\\/g, '/'));
+  const basename = path.posix.basename(filename);
+  return skipFiles.some((skipFile) => basename === skipFile);
 }
 
 export default createRule({
@@ -53,7 +54,7 @@ export default createRule({
             items: {
               type: 'string',
               minLength: 1,
-              pattern: '^[^*?\\[\\]{}!]+\\.interface\\.ts$',
+              pattern: '^[^/\\\\*?\\[\\]{}!]+\\.interface\\.ts$',
             },
           },
         },
