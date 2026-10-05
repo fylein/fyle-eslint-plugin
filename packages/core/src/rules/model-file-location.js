@@ -29,7 +29,7 @@ function isInModelFolder(filename, modelFolders) {
 }
 
 function matchesSkipFile(filename, skipFiles) {
-  return skipFiles.some((pattern) => minimatch(filename, pattern, { dot: true }));
+  return skipFiles.some((skipFile) => filename === skipFile.replace(/\\/g, '/'));
 }
 
 export default createRule({
@@ -50,7 +50,11 @@ export default createRule({
           },
           skipFiles: {
             type: 'array',
-            items: { type: 'string', minLength: 1, pattern: '\\.interface\\.ts$' },
+            items: {
+              type: 'string',
+              minLength: 1,
+              pattern: '^[^*?\\[\\]{}!]+\\.interface\\.ts$',
+            },
           },
         },
         required: ['modelFolders'],
