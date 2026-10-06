@@ -14,10 +14,11 @@ The `model-file-location` rule keeps TypeScript shape declarations in configured
       ],
       skipFiles: [
         'budget.interface.ts',
+        'index.ts',
       ],
     }],
   },
 }
 ```
 
-Every TypeScript file under a configured model folder must end in `.model.ts`. `skipFiles` is an exact filename allowlist of `.interface.ts` files; the file may be located in any directory, but its basename must match exactly. Paths and glob patterns are not supported. Those files remain subject to the interface-file convention rule. Type and interface declarations outside the configured model folders are also rejected.
+Every TypeScript file under a configured model folder must end in `.model.ts`. `skipFiles` accepts only exact `index.ts` or exact `*.interface.ts` filenames; the file may be located in any directory, but its basename must match exactly. Paths and glob patterns are not supported. Skipped files remain subject to their other applicable rules. Type and interface declarations outside the configured model folders are also rejected.

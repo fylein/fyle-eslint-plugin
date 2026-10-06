@@ -6,7 +6,7 @@ const root = '/project';
 const options = [
   {
     modelFolders: ['**/apps/*/src/models'],
-    skipFiles: ['budget.interface.ts'],
+    skipFiles: ['budget.interface.ts', 'index.ts'],
   },
 ];
 
@@ -35,6 +35,11 @@ ruleTester.run('model-file-location', rule, {
     {
       filename: `${root}/apps/expenses/src/models/budget.interface.ts`,
       code: 'export interface Budget { amount: number }',
+      options,
+    },
+    {
+      filename: `${root}/apps/expenses/src/models/index.ts`,
+      code: "export { default as Budget } from './budget.model';",
       options,
     },
     {
