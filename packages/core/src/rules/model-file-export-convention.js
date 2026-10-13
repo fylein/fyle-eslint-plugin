@@ -32,28 +32,30 @@ function getTypeReferenceRootName(node) {
   return current?.type === 'Identifier' ? current.name : null;
 }
 
-function containsImportedTypeReference(node, importedTypeNames) {
-  if (!node || typeof node !== 'object') {
+function referencesImportedTypeThroughWrappers(node, importedTypeNames) {
+  if (node?.type === 'TSParenthesizedType') {
+    return referencesImportedTypeThroughWrappers(node.typeAnnotation, importedTypeNames);
+  }
+
+  if (node?.type !== 'TSTypeReference') {
     return false;
   }
 
-  if (node.type === 'TSTypeReference' && importedTypeNames.has(getTypeReferenceRootName(node))) {
+  if (importedTypeNames.has(getTypeReferenceRootName(node))) {
     return true;
   }
 
-  for (const [key, value] of Object.entries(node)) {
-    if (key === 'parent' || key === 'loc' || key === 'range') {
-      continue;
-    }
-    if (Array.isArray(value) && value.some((child) => containsImportedTypeReference(child, importedTypeNames))) {
-      return true;
-    }
-    if (!Array.isArray(value) && containsImportedTypeReference(value, importedTypeNames)) {
-      return true;
-    }
+  return (
+    node.typeArguments?.params.some((type) => referencesImportedTypeThroughWrappers(type, importedTypeNames)) ?? false
+  );
+}
+
+function extendsImportedType(node, importedTypeNames) {
+  if (node?.type !== 'TSIntersectionType') {
+    return false;
   }
 
-  return false;
+  return node.types.some((type) => referencesImportedTypeThroughWrappers(type, importedTypeNames));
 }
 
 export default createRule({
@@ -69,7 +71,8 @@ export default createRule({
       extraExportedType: 'Model files must export exactly one local type; this is an additional exported type.',
       invalidExport: 'Model files must export a local type declaration, not {{ exportKind }}.',
       interfaceNotAllowed: 'Model files must not contain interface declarations.',
-      uiPrefixRequired: "Model types derived from '@fylein/types' must start with 'UI'; found '{{ exportName }}'.",
+      uiPrefixRequired:
+        "Model types extending a type from '@fylein/types' must start with 'UI'; found '{{ exportName }}'.",
       filenameMustMatchExport:
         "Filename must be '{{ expectedFilename }}' to match the exported type '{{ exportName }}'.",
     },
@@ -167,7 +170,7 @@ export default createRule({
 
         if (
           importedTypeNames.size > 0 &&
-          containsImportedTypeReference(exportedType.typeAnnotation, importedTypeNames) &&
+          extendsImportedType(exportedType.typeAnnotation, importedTypeNames) &&
           !exportName.startsWith('UI')
         ) {
           context.report({
