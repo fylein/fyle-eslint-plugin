@@ -54,7 +54,7 @@ export default createRule({
             items: {
               type: 'string',
               minLength: 1,
-              pattern: '^[^/\\\\*?\\[\\]{}!]+\\.interface\\.ts$',
+              pattern: '^(?:index|[^/\\\\*?\\[\\]{}!]+\\.interface)\\.ts$',
             },
           },
         },
@@ -66,7 +66,7 @@ export default createRule({
       declarationMustBeInModelFile:
         'Type and interface declarations must be in a .model.ts file under a configured model folder.',
       fileMustBeModelOrSkippedInterface:
-        'Files under configured model folders must end in .model.ts unless matched by skipFiles.',
+        'Files under configured model folders must end in .model.ts unless their filename is matched by skipFiles.',
     },
   },
   defaultOptions: [{ modelFolders: [], skipFiles: [] }],
